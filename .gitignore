@@ -1,0 +1,6 @@
+src/Debug/
+src/.settings/
+src/app/Entities/build/
+src/app/Entities/*.pro.user
+
+docs/build/
