@@ -1,7 +1,7 @@
 \documentclass[a4paper,12pt]{article}
 \usepackage[T2A]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage[english]{babel}  % changed to english
+\usepackage[english]{babel}  % language changed to english
 \usepackage{graphicx}
 \usepackage{geometry}
 \geometry{top=2cm,bottom=2cm,left=2.5cm,right=1.5cm}
@@ -42,15 +42,15 @@
 \section{Introduction}
 \label{sec:introduction}
 
-This document contains information necessary for the proper operation of the automated system “ST-Mate”.
-It includes the purpose and operating conditions, preparation for use, description of operations, user actions, recommendations for troubleshooting, and guidance on mastering the system.
+This document contains information necessary for the proper operation of the automated system «ST-Mate». 
+The document describes the purpose and operating conditions, preparation for use, description of operations, user actions, as well as recommendations for troubleshooting and guidance on mastering the system.
 
 \subsection{Scope of Application}
-“ST-Mate” is designed as an intelligent chessboard for playing classical chess.
-It is suitable for use in home environments, educational institutions, chess clubs, and other locations.
+«ST-Mate» is designed as an intelligent chessboard for playing classical chess.
+It is suitable for use in home environments, educational institutions, chess clubs and other places.
 
 \subsection{Brief Description of Automation Capabilities}
-“ST-Mate” provides the following functions:
+«ST-Mate» provides the following functions:
 \begin{itemize}
     \item Automatic detection of piece positions on the board.
     \item Highlighting of legal moves for each piece.
@@ -60,23 +60,25 @@ It is suitable for use in home environments, educational institutions, chess clu
 \end{itemize}
 
 \subsection{List of Operational Documentation}
-The user is advised to read this manual before operating “ST-Mate”, as well as to be familiar with the FIDE laws of chess.
+Operational documentation includes:
+User Manual (this document) — contains information for users about the purpose, operating conditions, preparation for use, description of operations, and troubleshooting recommendations.
 
 % ========== 2 Purpose and Operating Conditions ==========
 \section{Purpose and Operating Conditions}
 \label{sec:purpose}
 
 \subsection{Purpose of ST-Mate}
-“ST-Mate” is an intelligent chessboard designed for playing classical chess in three modes:
+«ST-Mate» is an intelligent chessboard designed for playing classical chess in three modes:
 \begin{itemize}
     \item Player controlling white pieces against the built-in chess engine;
     \item Player controlling black pieces against the built-in chess engine;
     \item Two-player mode without engine intervention.
 \end{itemize}
 
-“ST-Mate” automatically recognises piece positions, highlights legal moves, provides hints, and manages the game.
+«ST-Mate» automatically recognises piece positions, highlights legal moves, provides hints, and manages the game.
 
 \subsection{Technical Specifications}
+
 \begin{itemize}
     \item Overall dimensions (L×W×H): 455×455×45 mm.
     \item Playing field size: 400×400 mm.
@@ -88,11 +90,11 @@ The user is advised to read this manual before operating “ST-Mate”, as well 
     \item Piece position sensors: 64 Hall effect sensors SS49E.
     \item Square illumination: addressable LED strip WS2813.
     \item Chess engine: micro-Max version 4.8 by H.G. Muller.
-    \item Wireless interface: Bluetooth, device name “ST-Mate”.
+    \item Wireless interface: Bluetooth, device name «ST-Mate».
 \end{itemize}
 
 \subsection{Operating Conditions}
-The “ST-Mate” chessboard is intended for operation at temperatures from +5 to +30 °C and relative humidity not exceeding 80 \% without condensation.
+The «ST-Mate» chessboard is intended for operation at temperatures from +5 to +30 °C and relative humidity not exceeding 80 \% without condensation.
 Exposure to direct sunlight, vibration, shocks, or liquids is not allowed.
 
 % ========== 3 Preparation for Use ==========
@@ -100,7 +102,7 @@ Exposure to direct sunlight, vibration, shocks, or liquids is not allowed.
 \label{sec:preparation}
 
 \subsection{Unpacking and Inspection}
-Remove the “ST-Mate” chessboard from its packaging.
+Remove the «ST-Mate» chessboard from its packaging.
 Ensure there is no visible mechanical damage to the housing, board, or pieces.
 Check the contents.
 
@@ -118,7 +120,7 @@ For first-time use, perform the following steps with no pieces on the board:
 \begin{enumerate}
     \item Connect one end of the cable to the power source.
     \item Connect the other end (USB Type-C) to the connector on the rear panel of the ST-Mate.
-    \item After power is applied, the “ST-Mate” chessboard performs a self-test and calibration: all LEDs briefly light up, then the board enters the waiting state for the initial setup of pieces.
+    \item After power is applied, the «ST-Mate» chessboard performs a self-test and calibration: all LEDs briefly light up, then the board enters the waiting state for the initial setup of pieces.
 \end{enumerate}
 
 \subsection{Functionality Check}
@@ -130,8 +132,9 @@ After connecting the power and completing the self-test, verify the following:
     \item Ranks 3–6 are not lit if they have no pieces; otherwise they flash red. See section \ref{sec:initial-position} \nameref{sec:initial-position}.
     \item If white and black pieces are placed on the wrong sides (sides swapped), they flash red. See section \ref{sec:initial-position} \nameref{sec:initial-position}.
 \end{enumerate}
-If any of the above conditions are not met, perform a reset using the “RESET” button and repeat the verification procedure.
+If any of the above conditions are not met, perform a reset using the «RESET» button and repeat the verification procedure.
 If the problem persists, refer to section \ref{sec:troubleshooting} \nameref{sec:troubleshooting}.
+
 
 % ========== 4 Description of Operations ==========
 \section{Description of Operations}
@@ -141,9 +144,9 @@ If the problem persists, refer to section \ref{sec:troubleshooting} \nameref{sec
 On the front panel (from left to right):
 \begin{enumerate}
     \item Logo.
-    \item “HELP” button — when pressed, shows a suggested move for the side whose turn it is.
-    \item “MODE” switch — has three positions corresponding to the game modes.
-    \item “PRNG” button (pseudorandom number generator) — activates the mode in which the engine makes random moves (useful for training).
+    \item «HINT» button — when pressed, shows a suggested move for the side whose turn it is.
+    \item «MODE» switch — has three positions corresponding to the game modes.
+    \item «PRNG» button (pseudorandom number generator) — activates the mode in which the engine makes random moves (useful for training).
 \end{enumerate}
 On the rear side of the board (from left to right):
 \begin{enumerate}
@@ -152,7 +155,7 @@ On the rear side of the board (from left to right):
 \end{enumerate}
 
 \subsection{Selecting the Game Mode}
-The “MODE” switch is located on the front panel of the “ST-Mate” chessboard.
+The «MODE» switch is located on the front panel of the «ST-Mate» chessboard.
 
 Game modes:
 \begin{itemize}
@@ -162,7 +165,7 @@ Game modes:
 \end{itemize}
 When the mode is changed using the switch, the game is automatically reset. To start a new game, the pieces must be placed in the initial position (see section \ref{sec:initial-position} \nameref{sec:initial-position}).
 
-After setting up the pieces and selecting the mode, the “ST-Mate” chessboard is ready for play.
+After setting up the pieces and selecting the mode, the «ST-Mate» chessboard is ready for play.
 
 \subsection{Initial Position of Pieces}
 \label{sec:initial-position}
@@ -178,6 +181,7 @@ The pieces are recognised automatically by the built-in Hall effect sensors.
 
 \textbf{Important:} After each mode change or when power is applied, the board automatically enters the waiting state for the initial setup.
 The pieces must be manually placed in their correct squares. Once the setup is complete, the controller automatically detects all pieces and is ready for play.
+
 
 \subsection{Performing a Move}
 According to chess rules, players alternate moves. White moves first.
@@ -214,6 +218,7 @@ Castling queenside is shown in Fig. \ref{fig:queenside castling}.
     \includegraphics[width=0.4\textwidth]{queenside castling.png}
     \caption{Castling queenside}
     \label{fig:queenside castling}
+
 \end{figure}
 
 The castling procedure includes the following steps:
@@ -256,17 +261,17 @@ The promotion procedure includes the following steps:
     \item If an illegal move is attempted, the squares flash red and the move is not accepted. The player must return the piece to its original square and choose another move.
 \end{enumerate}
 
-\subsection{Using the HELP Button}
-The “HELP” button is located on the side panel of the “ST-Mate” chessboard.
+\subsection{Using the HINT Button}
+The «HINT» button is located on the side panel of the «ST-Mate» chessboard.
 The hint does not affect the turn order and does not automatically make a move.
 
 \subsection{Using the PRNG Button}
-The “PRNG” button is located on the side panel of the “ST-Mate” chessboard.
+The «PRNG» button is located on the side panel of the «ST-Mate» chessboard.
 The PRNG button is intended to enable random move generation by the controller in modes involving the chess engine.
 The PRNG mode can only be activated when the board is powered on or reset.
 
 \subsection{Reset and Restart}
-If a forced reset of the “ST-Mate” chessboard is required (e.g., in case of a freeze or to start a new game), use the “RESET” button located next to the USB Type-C connector.
+If a forced reset of the «ST-Mate» chessboard is required (e.g., in case of a freeze or to start a new game), use the «RESET» button located next to the USB Type-C connector.
 A short press of the button reboots the microcontroller and repeats the initialisation procedure.
 After a reset, the pieces must be placed in the initial position again.
 
@@ -277,41 +282,46 @@ After connection, a text-based command protocol is available.
 Commands are transmitted in UTF-8 encoding and end with the characters \texttt{\textbackslash{r}\textbackslash{n}} (carriage return and line feed).
 
 \subsection{Connection}
-When the “ST-Mate” chessboard is powered on, it becomes available for Bluetooth connection under the name \texttt{ST-Mate}.
+When the «ST-Mate» chessboard is powered on, it becomes available for Bluetooth connection under the name \texttt{ST-Mate}.
 
 % ========== Troubleshooting ==========
 \section{Troubleshooting}
 \label{sec:troubleshooting}
 
 Table \ref{tab:errors} lists possible abnormal situations and recommended actions.
-
 \begin{table}[H]
     \centering
     \begin{tabular}{|p{0.3\textwidth}|p{0.6\textwidth}|}
         \hline
         \textbf{Situation} & \textbf{User Action} \\
         \hline
-        The “ST-Mate” chessboard does not turn on, no backlight & 
-        Check the USB Type-C cable connection, ensure the power supply provides 5 V and at least 500 mA. 
+        The «ST-Mate» chessboard does not turn on, no backlight & 
+        Check the USB Type-C cable connection, ensure the power supply provides 5 V and at least 500 mA.
         Try a different cable or USB port. \\
         \hline
         Pieces are not recognised (no reaction to movement) & 
-        Ensure the pieces are from the original set and placed exactly in the centre of squares. 
-        If necessary, press “RESET” and set up the pieces again. \\
+        Ensure the pieces are from the original set and placed exactly in the centre of squares.
+        If necessary, press «RESET» and set up the pieces again. \\
         \hline
         Erratic backlight (random flashing) & 
-        Possible influence of external magnetic fields. 
-        Remove sources of strong magnetic fields. 
+        Possible influence of external magnetic fields.
+        Remove sources of strong magnetic fields.
         Perform a reset. \\
         \hline
+        Piece highlighting does not match their positions &
+        Increase the sensor trigger level in settings by 5–10 units.
+        Increase the smoothing coefficient in settings by 1–2 units.
+        Check the power supply for compliance with requirements.
+        Reduce backlight brightness in settings. \\
+        \hline
         After calibration, sensors do not react to pieces & 
-        Make sure calibration was performed with no pieces on the board. 
-        Repeat forced calibration. 
+        Make sure calibration was performed with no pieces on the board.
+        Repeat forced calibration.
         Adjust the trigger level and smoothing coefficient. \\
         \hline
         The engine does not make a move in modes with controller & 
-        Verify the correct mode is selected and that it is the controller’s turn. 
-        If the delay exceeds 10 seconds, press “HELP” to initiate a move. \\
+        Verify the correct mode is selected and that it is the controller’s turn.
+        If the delay exceeds 10 seconds, press «HINT» to initiate a move. \\
         \hline
         Bluetooth does not work, ST-Mate not in device list &
         Ensure ST-Mate is powered on. Contact the ST-Mate developer. \\
@@ -324,27 +334,31 @@ Table \ref{tab:errors} lists possible abnormal situations and recommended action
 % ========== Guidance for Mastering ==========
 \section{Guidance for Mastering}
 \label{sec:usage}
-To quickly become familiar with the “ST-Mate” chessboard, it is recommended to:
+To quickly become familiar with the «ST-Mate» chessboard, it is recommended to:
 \begin{itemize}
-    \item Start with “Player vs Player” mode without using hints, to get used to the physical interaction with the board and understand how moves are recognised.
+    \item Carefully read this manual, especially sections \ref{sec:operations} \nameref{sec:operations} and \ref{sec:troubleshooting} \nameref{sec:troubleshooting}.
+    \item Familiarise yourself with the FIDE laws of chess. Link to the official FIDE handbook: \url{https://handbook.fide.com/} (accessed: 01.04.2026).
+    \item Start with «Player vs Player» mode without using hints, to get used to the physical interaction with the board and understand how moves are recognised.
     \item After mastering basic operations, move on to playing against the controller, using hints to study tactical techniques.
-    \item If in doubt about the correctness of the piece positions, use the “Reset” button and start a new game.
+    \item If in doubt about the correctness of the piece positions, use the «Reset» button and start a new game.
 \end{itemize}
 
 \subsection{Visual User Messages}
-The “ST-Mate” chessboard uses various methods to inform the user about the current state and events.
+
+The «ST-Mate» chessboard uses various methods to inform the user about the current state and events.
 It is advisable to use the standard colour theme (THEME:0) for mastering, which intuitively displays legal moves and errors.
 The following examples of light indication are given for the standard theme.
 
-For the initial setup and waiting for the game to start, squares of ranks 1 and 2 from the white side and ranks 7 and 8 from the black side are lit in red, while the four central ranks are not lit.\\
-As soon as the pieces are placed in their correct squares, the board recognises them and turns off the backlight.\\
-When a piece is selected, the square it occupies starts flashing white. Legal moves for the selected piece are illuminated in white.\\
-Once the piece is moved to a new square, the completed move is highlighted in yellow, and the turn passes to the opponent (or the controller).\\
-If an illegal move is attempted, the squares flash red.\\
-When the “HELP” button is pressed to show a recommended move, the squares involved in the suggestion are lit in blue.\\
-During castling, the squares where the king moves are lit white. After the king moves, the completed move is highlighted yellow. Then the rook move is indicated with white light; after the rook is moved, the turn passes to the opponent (or the controller).\\
-When delivering a check, the attacking piece flashes blue, while the king in check flashes red.\\
-When checkmate occurs, the attacking piece flashes green, and the mated king flashes red. The game ends.\\
+For the initial setup and waiting for the game to start, squares of ranks 1 and 2 from the white side and ranks 7 and 8 from the black side are lit in red, while the four central ranks are not lit.
+As soon as the pieces are placed in their correct squares, the board recognises them and turns off the backlight.
+When a piece is selected, the square it occupies starts flashing white. Legal moves for the selected piece are illuminated in white.
+Once the piece is moved to a new square, the completed move is highlighted in yellow, and the turn passes to the opponent (or the controller).
+If an illegal move is attempted, the squares flash red.
+When the «HINT» button is pressed to show a recommended move, the squares involved in the suggestion are lit in blue.
+During castling, the squares where the king moves are lit white. After the king moves, the completed move is highlighted yellow.
+Then the rook move is indicated with white light; after the rook is moved, the turn passes to the opponent (or the controller).
+When delivering a check, the attacking piece flashes blue, while the king in check flashes red.
+When checkmate occurs, the attacking piece flashes green, and the mated king flashes red. The game ends.
 In a stalemate situation, the kings flash yellow. The game ends.
 After the game ends, any movement of a piece resets the board to waiting for the initial setup for a new game, and ranks 1–2 from white and 7–8 from black light up red again.
 
@@ -382,7 +396,7 @@ Trigger level:40\r\n
 \section{Technical Maintenance}
 \label{sec:maintenance}
 
-To avoid injury and damage, as well as to ensure a long service life of the “ST-Mate” chessboard, the following maintenance recommendations should be observed.
+To avoid injury and damage, as well as to ensure a long service life of the «ST-Mate» chessboard, the following maintenance recommendations should be observed.
 \begin{itemize}
     \item Do not disassemble the device yourself, as this may cause injury or damage.
     \item Keep the board and pieces clean; avoid liquid ingress into the housing.
@@ -397,10 +411,12 @@ Calibration is recommended upon first use, after replacing the power supply or c
 The calibration table is stored in non-volatile memory.
 Calibration is performed automatically at power-on or reset if there are no pieces on the board.\\
 There are two ways to perform forced calibration:
+
 \begin{enumerate}
-    \item With the “HELP” button held down when applying power or pressing the “RESET” button.
+    \item With the «HINT» button held down when applying power or pressing the «RESET» button.
     \item Via the terminal command \texttt{CALIBRATE\textbackslash{r}\textbackslash{n}} over Bluetooth.
 \end{enumerate}
+
 To perform forced calibration:
 \begin{itemize}
     \item Remove all pieces from the board.
@@ -409,12 +425,13 @@ To perform forced calibration:
 \end{itemize}
 
 \subsection{Storage and Transportation}
-Store the “ST-Mate” chessboard in a dry, clean place at a temperature between +5 and +30 °C.
+Store the «ST-Mate» chessboard in a dry, clean place at a temperature between +5 and +30 °C.
 For transportation, use the original packaging or equivalent protection against shocks and vibrations.
 Avoid exposure to direct sunlight, moisture, extreme temperatures, and mechanical damage.
 
 \subsection{Surface Care}
 Wipe the housing and pieces with a soft, slightly damp cloth. Do not allow liquid to enter the housing. Do not use abrasive cleaning agents.
+
 
 \newpage
 % ========== List of Abbreviations ==========
@@ -427,11 +444,12 @@ Wipe the housing and pieces with a soft, slightly damp cloth. Do not allow liqui
     \item LED — Light Emitting Diode.
     \item Bluetooth — wireless technology for short-range data exchange.
     \item PGN — Portable Game Notation, a format for recording chess games.
+    \item FEN — Forsyth-Edwards Notation, a format for describing a chess position.
     \item PRNG — Pseudorandom Number Generator.
     \item STM32 — family of 32-bit microcontrollers from STMicroelectronics.
     \item SS49E — Hall effect sensor used to detect the presence of a magnetic field.
-    \item WS2813 — type of addressable LED strip that allows individual control of each LED.
-    \item micro-Max — compact chess engine developed by H.G. Muller. Source code available at: \url{https://home.hccnet.nl/h.g.muller/umax4_8.c}.
+    \item WS2813 — type of addressable LED strip.
+    \item micro-Max — compact chess engine developed by H.G. Muller. Source code available at: \url{https://home.hccnet.nl/h.g.muller/umax4_8.c} (accessed: 01.04.2026).
 \end{itemize}
 
 \newpage
@@ -445,9 +463,9 @@ Wipe the housing and pieces with a soft, slightly damp cloth. Do not allow liqui
           Email: \texttt{alexander.kondratyev.dev@gmail.com}\\
           Telegram: \url{https://t.me/kondratyev_an}
     \item \textbf{Developer of the micro-Max chess engine:} H.G. Muller.\\
-          Homepage: \url{https://home.hccnet.nl/h.g.muller/}
+          Homepage: \url{https://home.hccnet.nl/h.g.muller/} (accessed: 01.04.2026).
 \end{itemize}
-All questions regarding operation, configuration, and modification of the “ST-Mate” chessboard should be directed to the developers.
+All questions regarding operation, configuration, and modification of the «ST-Mate» chessboard should be directed to the developers.
 
 \newpage
 
@@ -455,8 +473,9 @@ All questions regarding operation, configuration, and modification of the “ST-
 \clearpage
 \section*{Appendix A. Command Protocol}
 \addcontentsline{toc}{section}{Appendix A. Command Protocol}
+\label{sec:protocol}
 
-\begin{longtable}{|p{0.28\textwidth}|p{0.62\textwidth}|}
+\begin{longtable}{|p{0.15\textwidth}|p{0.80\textwidth}|}
 \hline
 \textbf{Command} & \textbf{Description} \\ \hline
 \endfirsthead
@@ -465,22 +484,41 @@ All questions regarding operation, configuration, and modification of the “ST-
 \endhead
 \hline
 \endfoot
-\texttt{REBOOT} & Reboot the device (analogous to pressing the Reset button). \\ \hline
-\texttt{VOLT?} & Request processor supply voltage (returns value in millivolts). \\ \hline
-\texttt{HELP:X} & Enable/disable the help button. X=0 — button inactive, X=1 — button active. \\ \hline
+\multicolumn{2}{|c|}{\textbf{Service Commands}} \\ \hline
+\texttt{REBOOT} & Reboot the device (analogous to pressing the «RESET» button). \\ \hline
 \texttt{SERVICE:X} & Enable/disable service mode. X=0 — disabled, X=1 — enabled. \\ \hline
+\texttt{VOLT?} & Request processor supply voltage (returns value in millivolts). \\ \hline
 \texttt{CALIBRATE} & Start sensor calibration (board must be empty). \\ \hline
 \texttt{TRIGLV?} & Request current trigger level of sensors (default 25). \\ \hline
 \texttt{TRIGLV:X} & Set sensor trigger level (X is an integer depending on calibration). \\ \hline
-\texttt{ALPHA?} & Request current exponential smoothing coefficient (default 4). \\ \hline
+\texttt{ALPHA?} & Request current exponential smoothing coefficient (default 8). \\ \hline
 \texttt{ALPHA:X} & Set exponential smoothing coefficient (X is an integer). \\ \hline
-\texttt{BRIGHT:X} & Set backlight brightness (1–100). Example: \texttt{BRIGHT:75}. \\ \hline
-\texttt{THEME:X} & Set colour theme (0–11). List of themes is given in Appendix B. \\ \hline
+\multicolumn{2}{|c|}{\textbf{User Commands}} \\ \hline
+\texttt{EVENT?} & Request tournament or match name. \\ \hline
+\texttt{EVENT:X} & Set tournament or match name (e.g., EVENT:Casual Game). \\ \hline
+\texttt{SITE?} & Request venue. \\ \hline
+\texttt{SITE:X} & Set venue (e.g., SITE:Moscow). \\ \hline
+\texttt{TIME?} & Request current time. \\ \hline
+\texttt{TIME:X} & Set current time (X is a string in the format dd.mm.yy HH:MM:SS). \\ \hline
+\texttt{ROUND?} & Request round number. \\ \hline
+\texttt{ROUND:X} & Set round number (e.g., ROUND:1). \\ \hline
+\texttt{WHITE?} & Request name of the player playing white. \\ \hline
+\texttt{WHITE:X} & Set name of the player playing white (e.g., WHITE:Alice). \\ \hline
+\texttt{BLACK?} & Request name of the player playing black. \\ \hline
+\texttt{BLACK:X} & Set name of the player playing black (e.g., BLACK:Bob). \\ \hline
+\texttt{FEN?} & Request current position in FEN format. \\ \hline
+\texttt{SEED?} & Request current seed for the pseudorandom number generator. \\ \hline
+\texttt{SEED:X} & Set seed for the pseudorandom number generator (X is an integer or string). \\ \hline
+\texttt{BRIGHT?} & Request current backlight brightness level. \\ \hline
+\texttt{BRIGHT:X} & Set backlight brightness (0–100). Example:\texttt{BRIGHT:50}. \\ \hline
+\texttt{THEME:X} & Set colour theme (0–11). List of themes is given in \nameref{sec:themes}. \\ \hline
+\texttt{HINTBTN:X} & Enable/disable the HINT button. X=0 — button inactive, X=1 — active. \\ \hline
 \end{longtable}
 
 \clearpage
 \section*{Appendix B. Colour Schemes for Backlight}
 \addcontentsline{toc}{section}{Appendix B. Colour Schemes for Backlight}
+\label{sec:themes}
 
 \begin{center}
 \begin{tabular}{|c|l|}

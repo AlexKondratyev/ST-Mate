@@ -190,9 +190,9 @@ class MainListener : public Listener
 		    printf("Seed set: %d (from string)\n", state_.seed);
 		}
 
-		if (message.find("HELPBTN:") != std::string::npos)
+		if (message.find("HINTBTN:") != std::string::npos)
 		{
-		    if (sscanf(message.c_str(), "HELPBTN:%d", &param) == 1)
+		    if (sscanf(message.c_str(), "HINTBTN:%d", &param) == 1)
 		    {
 		    	if (param >= 0 && param <= 1)
 		    	{
