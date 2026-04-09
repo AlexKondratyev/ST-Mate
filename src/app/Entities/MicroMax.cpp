@@ -1,10 +1,33 @@
+/***************************************************************************/
+/*                               micro-Max,                                */
+/* A chess program smaller than 2KB (of non-blank source), by H.G. Muller  */
+/***************************************************************************/
+/* version 4.8 (1953 characters) features:                                 */
+/* - recursive negamax search                                              */
+/* - all-capture MVV/LVA quiescence search                                 */
+/* - (internal) iterative deepening                                        */
+/* - best-move-first 'sorting'                                             */
+/* - a hash table storing score and best move                              */
+/* - futility pruning                                                      */
+/* - king safety through magnetic, frozen king in middle-game              */
+/* - R=2 null-move pruning                                                 */
+/* - keep hash and repetition-draw detection                               */
+/* - better defense against passers through gradual promotion              */
+/* - extend check evasions in inner nodes                                  */
+/* - reduction of all non-Pawn, non-capture moves except hash move (LMR)   */
+/* - full FIDE rules (expt under-promotion) and move-legality checking     */
+
 #include "ChessEngine.h"
 
 #define W while
 #define K(A,B) *(int*)(T+A+(B&8)+S*(B&7))
 #define J(A) K(y+A,b[y])-K(x+A,u)-K(H+A,t)
 
-#define U (1<<8) + 1// (1<<24)
+#ifndef STM32F103xB
+#define U (1<<24)
+#else
+#define U (1<<8) + 1
+#endif
 
 struct _ {int K,V;char X,Y,D;} A[U];           /* hash table, 16M+8 entries*/
 

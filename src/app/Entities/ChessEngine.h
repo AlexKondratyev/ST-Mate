@@ -18,11 +18,11 @@ static struct SettingsPGN {
 #else
 extern struct SettingsPGN {
 #endif
-	char event[32];
-	char site[32];
-	short round;
-	char white[32];
-	char black[32];
+    char event[32] = "Casual Game";
+    char site[32] = "Iserlohn, NRW GER";
+    short round = 1;
+    char white[32] = "Player 1";
+    char black[32] = "Player 2";
 } settingsPGN;
 #pragma pack(pop)
 
@@ -84,6 +84,7 @@ private:
     char getFigure(std::string field);
     std::string toCoord(int idx);
     std::string formatPGNMove(std::string move);
+    std::string formatPGNMove(int from, int to, bool isCapture, int pieceType, bool isPromotion = false);
     void check50MoveRule();
     void updateFiftyMoveClock(int piece, bool isCapture);
 public:

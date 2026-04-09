@@ -117,6 +117,12 @@ void fullTest()
     }
     delete eb;
 
+    qDebug() << "=====Check Promotion Test=====";
+    eb = new ChessEngine(BLACK);
+    eb->setFEN("8/3k3P/8/8/8/8/2p5/4K3 w - - 0 1");
+    eb->setMove("h7h8"); // add =Q
+    delete eb;
+
     qDebug() << "=====Casteling Test=====";
     eb = new ChessEngine(PVP);
     eb->setFEN("r3k2r/pbpqppbp/np1p2pn/8/8/NP1P2PN/PBPQPPBP/R3K2R w KQkq - 0 1");
@@ -321,72 +327,50 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    qDebug() << "=====Rock avalible move Test=====";
-    eb = new ChessEngine(PVP);
-    eb->setFEN("5rk1/p2Q1p1p/3p2p1/B7/2P1P3/Pr1P4/5PRP/4K3 w - - 0 1");
-    bool isAllow = eb->checkMove("e1g1");
-    qDebug() << "check rock move allow?:" << isAllow;
-
-    delete eb;
-
     // fullTest();
 
+    // сам с собой в pvp
+    playCount = 1;
+    while(playCount--)
+    {
+        eb = new ChessEngine(PVP, playCount, 4);
+        while(eb->isGameActive())
+        {
+            auto moveW = eb->getHelp();
+            eb->setMove(moveW);
 
+            auto moveB = eb->getHelp();
+            eb->setMove(moveB);
+        }
+        cout << eb->showBoard() << endl; // вывод доски
+        delete eb;
+    }
 
-    // // MANUAL GAME
-    // char user_move[5];
-    // eb = new ChessEngine(PVP);   // Движок играет за чёрных
-    // cout << eb->showBoard() << endl; // вывод доски
-    // while(1)
-    // {
-    //     cout << eb->showBoard() << endl; // вывод доски
-    //     cin >> user_move;   // ввод хода
-    //     eb->setMove(user_move);
-    // }
+    // сам с собой за чёрных
+    playCount = 1;
+    while(playCount--)
+    {
+        eb = new ChessEngine(BLACK, 25, 4);
+        while(eb->isGameActive())
+        {
+            auto moveW = eb->getHelp();
+            eb->setMove(moveW);
+        }
+        cout << eb->showBoard() << endl; // вывод доски
+        delete eb;
+    }
+    return 0;
 
-    // std::ofstream log("logfile.txt", std::ios_base::app | std::ios_base::out);
-    // log << line.c_str() << std::endl;
-
-    // // Движок следит
-    // playCount = 1;
-    // while(playCount--)
-    // {
-    //     ew = new ChessEngine(PVP, 0, 4);
-    //     while(ew->isGameActive())
-    //     {
-    //         auto moveW = ew->getHelp();
-    //         ew->setMove(moveW);
-    //         ew->showBoard();
-
-    //         auto moveB = ew->getHelp();
-    //         ew->setMove(moveB);
-    //         ew->showBoard();
-
-    //     }
-    //     delete ew;
-    // }
-
-    // playCount = 1;
-    // while(playCount--)
-    // {
-    //     eb = new ChessEngine(BLACK, 0, 4);   // Движок играет за чёрных
-    //     ew = new ChessEngine(WHITE, 0, 3);   // Движок играет за чёрных
-
-    //     while(ew->isGameActive() && eb->isGameActive())
-    //     {
-    //         auto wm = ew->getMove();
-    //         eb->setMove(wm);
-
-    //         auto bm = eb->getMove();
-    //         ew->setMove(bm);
-    //     }
-    //     printf("\a");
-    //     QThread::sleep(1);
-    //     delete eb;
-    //     delete ew;
-    // }
-
-
+    // MANUAL GAME
+    char user_move[5];
+    eb = new ChessEngine(BLACK, 25, 4);   // Движок играет за чёрных
+    cout << eb->showBoard() << endl; // вывод доски
+    while(1)
+    {
+        cin >> user_move;   // ввод хода
+        eb->setMove(user_move);
+        cout << eb->showBoard() << endl; // вывод доски
+    }
 
     return 0;
 }

@@ -1,22 +1,3 @@
-/***************************************************************************/
-/*                               micro-Max,                                */
-/* A chess program smaller than 2KB (of non-blank source), by H.G. Muller  */
-/***************************************************************************/
-/* version 4.8 (1953 characters) features:                                 */
-/* - recursive negamax search                                              */
-/* - all-capture MVV/LVA quiescence search                                 */
-/* - (internal) iterative deepening                                        */
-/* - best-move-first 'sorting'                                             */
-/* - a hash table storing score and best move                              */
-/* - futility pruning                                                      */
-/* - king safety through magnetic, frozen king in middle-game              */
-/* - R=2 null-move pruning                                                 */
-/* - keep hash and repetition-draw detection                               */
-/* - better defense against passers through gradual promotion              */
-/* - extend check evasions in inner nodes                                  */
-/* - reduction of all non-Pawn, non-capture moves except hash move (LMR)   */
-/* - full FIDE rules (expt under-promotion) and move-legality checking     */
-
 #include "ChessEngine.h"
 #include "../../Drivers/timestamp.h"
 #include <memory.h>
@@ -120,11 +101,10 @@ void ChessEngine::loop()
     // ХОД ЧЕЛОВЕКА
     // ==========================================
     // Сохраняем индексы ДО вызова D (пока доска не изменена)
+    int fromIdx = c[0] - 16 * c[1] + 799;
+    int toIdx   = c[2] - 16 * c[3] + 799;
     int pieceType = b[c[0] - 16 * c[1] + 799] & 7;
     bool isCapture = (b[c[2] - 16 * c[3] + 799] != 0);
-
-    std::string playerMove = c;
-    playerMove = formatPGNMove(playerMove);
 
     makeBackup();
     K=I;
@@ -137,7 +117,7 @@ void ChessEngine::loop()
     }
     // Ход легальный – обновляем счётчик 50 ходов
     updateFiftyMoveClock(pieceType, isCapture);  // ← используем ДО изменения доски
-
+    std::string playerMove = formatPGNMove(fromIdx, toIdx, isCapture, pieceType);
     // Проверка, не поставил ли человек мат
     makeBackup();
     c[0]='\n'; K=I; N=0; // Сбрасываем N
@@ -149,9 +129,7 @@ void ChessEngine::loop()
 #endif
     applyBackup();
 
-    // 3. Проверка на превращение
-    if (pieceType < 3 && ( (b[c[2] - 16 * c[3] + 799] & 7) == 7) ) playerMove += "=Q";
-    // 4. Проверка на Шах (+) и Мат (#)
+    // Проверка на Шах (+) и Мат (#)
     if (!(est > -I + 1)) playerMove += "#"; // Мат
     else if (!isCheck().empty()) playerMove += "+"; // Шах
 
@@ -198,6 +176,7 @@ void ChessEngine::loop()
     // ==========================================
     // ХОД ДВИЖКА
     // ==========================================
+    makeBackup();  // сохраняем доску перед поиском
     startThink = getCurrentTimeMs();
     c[0]='\n'; // Очищаем буфер, чтобы движок искал лучший ход
     K=I;
@@ -205,14 +184,16 @@ void ChessEngine::loop()
     est = D(-I,I,Q,O,1,searchDepth);
     isMoveValid(); // Синхронизируем флаг последнего хода
 
-    // Сохраняем индексы из cE (результат хода движка)
-    pieceType = b[cE[0] - 16 * cE[1] + 799] & 7;
-    isCapture = (b[cE[2] - 16 * cE[3] + 799] != 0);
+    // Получаем from, to из cE
+    int fromIdxE = cE[0] - 16 * cE[1] + 799;
+    int toIdxE   = cE[2] - 16 * cE[3] + 799;
+    // Из сохранённой доски (bBackup) получаем тип фигуры и было ли взятие
+    int pieceTypeE = bBackup[fromIdxE] & 7;
+    bool isCaptureE = (bBackup[toIdxE] != 0);
+    // Форматируем ход
+    std::string engineMove = formatPGNMove(fromIdxE, toIdxE, isCaptureE, pieceTypeE);
     // Ход легальный – обновляем счётчик 50 ходов
     updateFiftyMoveClock(pieceType, isCapture);  // ← используем ДО изменения доски
-
-    std::string engineMove = cE;
-    engineMove = formatPGNMove(engineMove);
 
     // Проверка на мат после хода движка
     makeBackup();
@@ -225,9 +206,7 @@ void ChessEngine::loop()
 #endif
     applyBackup();
 
-    // 3. Проверка на превращение
-    if (pieceType < 3 && ( (b[c[2] - 16 * c[3] + 799] & 7) == 7) ) playerMove += "=Q";
-    // 4. Проверка на Шах (+) и Мат (#)
+    // Проверка на Шах (+) и Мат (#)
     if (!(est > -I + 1)) engineMove += "#"; // Мат
     else if (!isCheck().empty()) engineMove += "+"; // Шах
 
@@ -245,7 +224,6 @@ void ChessEngine::loop()
         printf("%d. %s\n", moveNumber, engineMove.c_str());
 #endif
     }
-    engineMove = formatPGNMove(cE);
     pgn->addMove(engineMove);
     updateEpSquare(engineMove);
 #if SHOW_BOARD
@@ -271,9 +249,9 @@ Result ChessEngine::getGameResult()
 bool ChessEngine::isCastlingMove(const std::string& move, std::string& rockMove)
 {
     int t = move[2] - 16 * move[3] + 799;
-	int pieceType = b[t] & 7;
-	if (pieceType != 4) // king?
-		return false;
+    int pieceType = b[t] & 7;
+    if (pieceType != 4) // king?
+        return false;
 
     // Король белых
     if (move == "e1g1")
@@ -738,6 +716,66 @@ std::string ChessEngine::formatPGNMove(std::string move)
     }
 
     return pgnM;
+}
+
+std::string ChessEngine::formatPGNMove(int from, int to, bool isCapture, int pieceType, bool isPromotion) {
+    std::string pgnMove;
+    int fromFile = from & 7;
+    int fromRank = from >> 4;
+    int toFile = to & 7;
+    int toRank = to >> 4;
+
+    // Рокировка
+    if (pieceType == 4) {
+        if (from == 116 && to == 118) return "O-O";
+        if (from == 116 && to == 114) return "O-O-O";
+        if (from == 4 && to == 6) return "O-O";
+        if (from == 4 && to == 2) return "O-O-O";
+    }
+
+    // Превращение пешки
+    if (pieceType < 3 && (toRank == 0 || toRank == 7)) {
+        isPromotion = true;
+    }
+
+    // Определяем обозначение фигуры
+    char pieceChar = ' ';
+    switch (pieceType) {
+    case 1: case 2: pieceChar = ' '; break; // пешка – без буквы
+    case 3: pieceChar = 'N'; break;
+    case 4: pieceChar = 'K'; break;
+    case 5: pieceChar = 'B'; break;
+    case 6: pieceChar = 'R'; break;
+    case 7: pieceChar = 'Q'; break;
+    }
+
+    // Для фигур (кроме пешек) всегда добавляем начальную клетку в длинной нотации
+    if (pieceChar != ' ') {
+        pgnMove += pieceChar;
+        pgnMove += 'a' + fromFile;
+        pgnMove += '1' + (7 - fromRank);
+    } else {
+        // Для пешки: при взятии указываем вертикаль
+        if (isCapture) {
+            pgnMove += 'a' + fromFile;
+        }
+    }
+
+    // Взятие
+    if (isCapture) {
+        pgnMove += 'x';
+    }
+
+    // Клетка назначения
+    pgnMove += 'a' + toFile;
+    pgnMove += '1' + (7 - toRank);
+
+    // Превращение
+    if (isPromotion) {
+        pgnMove += "=Q";
+    }
+
+    return pgnMove;
 }
 
 void ChessEngine::updateFiftyMoveClock(int piece, bool isCapture) {
