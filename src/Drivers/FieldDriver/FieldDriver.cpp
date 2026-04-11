@@ -92,7 +92,7 @@ FieldDriver::FieldDriver(
 
 	bool isEmpty = true;
 	for (int i = 0; i < COUNT_ROW*COUNT_ROW; i++)
-		if (abs(value[i]-fieldsSetting.calibration_value[i]) > fieldsSetting.TRIGGER_LEVEL*3)
+		if (abs(value[i]-fieldsSetting.calibration_value[i]) > fieldsSetting.TRIGGER_LEVEL*5)
 		{
 			isEmpty = false;
 			break;
