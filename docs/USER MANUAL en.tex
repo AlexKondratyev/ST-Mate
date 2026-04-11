@@ -61,7 +61,7 @@ It is suitable for use in home environments, educational institutions, chess clu
 
 \subsection{List of Operational Documentation}
 Operational documentation includes:
-User Manual (this document) — contains information for users about the purpose, operating conditions, preparation for use, description of operations, and troubleshooting recommendations.
+User Manual (this document) - contains information for users about the purpose, operating conditions, preparation for use, description of operations, and troubleshooting recommendations.
 
 % ========== 2 Purpose and Operating Conditions ==========
 \section{Purpose and Operating Conditions}
@@ -71,8 +71,8 @@ User Manual (this document) — contains information for users about the purpose
 «ST-Mate» is an intelligent chessboard designed for playing classical chess in three modes:
 \begin{itemize}
     \item Player controlling white pieces against the built-in chess engine;
-    \item Player controlling black pieces against the built-in chess engine;
     \item Two-player mode without engine intervention.
+    \item Player controlling black pieces against the built-in chess engine;
 \end{itemize}
 
 «ST-Mate» automatically recognises piece positions, highlights legal moves, provides hints, and manages the game.
@@ -108,9 +108,9 @@ Check the contents.
 
 The package includes:
 \begin{itemize}
-    \item Electronic chessboard — 1 pc.
-    \item Pieces with magnets (32 pcs.) — 1 set.
-    \item User manual — 1 pc.
+    \item Electronic chessboard - 1 pc.
+    \item Pieces with magnets (32 pcs.) - 1 set.
+    \item User manual - 1 pc.
 \end{itemize}
 
 \subsection{Connecting to a Power Source}
@@ -144,24 +144,24 @@ If the problem persists, refer to section \ref{sec:troubleshooting} \nameref{sec
 On the front panel (from left to right):
 \begin{enumerate}
     \item Logo.
-    \item «HINT» button — when pressed, shows a suggested move for the side whose turn it is.
-    \item «MODE» switch — has three positions corresponding to the game modes.
-    \item «PRNG» button (pseudorandom number generator) — activates the mode in which the engine makes random moves (useful for training).
+    \item \textbf{«HINT»} button - when pressed, shows a suggested move for the side whose turn it is.
+    \item Switch - has three positions corresponding to the game modes.
+    \item \textbf{«RNG»} button (random number generator) - activates the mode in which the engine makes random moves (useful for training).
 \end{enumerate}
 On the rear side of the board (from left to right):
 \begin{enumerate}
-    \item RESET button — forces a microcontroller reboot.
-    \item USB Type-C power connector.
+    \item \textbf{RESET} button - forces a microcontroller reboot.
+    \item \textbf{USB} power connector.
 \end{enumerate}
 
 \subsection{Selecting the Game Mode}
-The «MODE» switch is located on the front panel of the «ST-Mate» chessboard.
+The switch is located on the front panel of the «ST-Mate» chessboard.
 
 Game modes:
 \begin{itemize}
-    \item \textbf{Player White} — the player controls the white pieces; the controller moves black.
-    \item \textbf{Player Black} — the player controls the black pieces; the controller moves white.
-    \item \textbf{PvP} — both players move alternately; the controller only tracks piece positions and provides hints.
+    \item \textbf{WvE} - the player controls the white pieces; the controller moves black.
+    \item \textbf{PvP} - both players move alternately; the controller only tracks piece positions and provides hints.
+    \item \textbf{BvE} - the player controls the black pieces; the controller moves white.
 \end{itemize}
 When the mode is changed using the switch, the game is automatically reset. To start a new game, the pieces must be placed in the initial position (see section \ref{sec:initial-position} \nameref{sec:initial-position}).
 
@@ -265,10 +265,10 @@ The promotion procedure includes the following steps:
 The «HINT» button is located on the side panel of the «ST-Mate» chessboard.
 The hint does not affect the turn order and does not automatically make a move.
 
-\subsection{Using the PRNG Button}
+\subsection{Using the RNG Button}
 The «PRNG» button is located on the side panel of the «ST-Mate» chessboard.
-The PRNG button is intended to enable random move generation by the controller in modes involving the chess engine.
-The PRNG mode can only be activated when the board is powered on or reset.
+The RNG button is intended to enable random move generation by the controller in modes involving the chess engine.
+The RNG mode can only be activated when the board is powered on or reset.
 
 \subsection{Reset and Restart}
 If a forced reset of the «ST-Mate» chessboard is required (e.g., in case of a freeze or to start a new game), use the «RESET» button located next to the USB Type-C connector.
@@ -439,17 +439,17 @@ Wipe the housing and pieces with a soft, slightly damp cloth. Do not allow liqui
 \label{sec:abbreviations}
 
 \begin{itemize}
-    \item AS — automated system.
-    \item USB — Universal Serial Bus.
-    \item LED — Light Emitting Diode.
-    \item Bluetooth — wireless technology for short-range data exchange.
-    \item PGN — Portable Game Notation, a format for recording chess games.
-    \item FEN — Forsyth-Edwards Notation, a format for describing a chess position.
-    \item PRNG — Pseudorandom Number Generator.
-    \item STM32 — family of 32-bit microcontrollers from STMicroelectronics.
-    \item SS49E — Hall effect sensor used to detect the presence of a magnetic field.
-    \item WS2813 — type of addressable LED strip.
-    \item micro-Max — compact chess engine developed by H.G. Muller. Source code available at: \url{https://home.hccnet.nl/h.g.muller/umax4_8.c} (accessed: 01.04.2026).
+    \item AS - automated system.
+    \item USB - Universal Serial Bus.
+    \item LED - Light Emitting Diode.
+    \item Bluetooth - wireless technology for short-range data exchange.
+    \item PGN - Portable Game Notation, a format for recording chess games.
+    \item FEN - Forsyth-Edwards Notation, a format for describing a chess position.
+    \item RNG - Random Number Generator.
+    \item STM32 - family of 32-bit microcontrollers from STMicroelectronics.
+    \item SS49E - Hall effect sensor used to detect the presence of a magnetic field.
+    \item WS2813 - type of addressable LED strip.
+    \item micro-Max - compact chess engine developed by H.G. Muller. Source code available at: \url{https://home.hccnet.nl/h.g.muller/umax4_8.c} (accessed: 01.04.2026).
 \end{itemize}
 
 \newpage
@@ -486,7 +486,7 @@ All questions regarding operation, configuration, and modification of the «ST-M
 \endfoot
 \multicolumn{2}{|c|}{\textbf{Service Commands}} \\ \hline
 \texttt{REBOOT} & Reboot the device (analogous to pressing the «RESET» button). \\ \hline
-\texttt{SERVICE:X} & Enable/disable service mode. X=0 — disabled, X=1 — enabled. \\ \hline
+\texttt{SERVICE:X} & Enable/disable service mode. X=0 - disabled, X=1 - enabled. \\ \hline
 \texttt{VOLT?} & Request processor supply voltage (returns value in millivolts). \\ \hline
 \texttt{CALIBRATE} & Start sensor calibration (board must be empty). \\ \hline
 \texttt{TRIGLV?} & Request current trigger level of sensors (default 25). \\ \hline
@@ -508,12 +508,12 @@ All questions regarding operation, configuration, and modification of the «ST-M
 \texttt{BLACK:X} & Set name of the player playing black (e.g., BLACK:Bob). \\ \hline
 \texttt{FEN?} & Request current position in FEN format. \\ \hline
 \texttt{PGN?} & Request current game in PGN format. \\ \hline
-\texttt{SEED?} & Request current seed for the pseudorandom number generator. \\ \hline
-\texttt{SEED:X} & Set seed for the pseudorandom number generator (X is an integer or string). \\ \hline
+\texttt{SEED?} & Request current seed for the random number generator. \\ \hline
+\texttt{SEED:X} & Set seed for the random number generator (X is an integer or string). \\ \hline
 \texttt{BRIGHT?} & Request current backlight brightness level. \\ \hline
 \texttt{BRIGHT:X} & Set backlight brightness (0–100). Example:\texttt{BRIGHT:50}. \\ \hline
 \texttt{THEME:X} & Set colour theme (0–11). List of themes is given in \nameref{sec:themes}. \\ \hline
-\texttt{HINTBTN:X} & Enable/disable the HINT button. X=0 — button inactive, X=1 — active. \\ \hline
+\texttt{HINTBTN:X} & Enable/disable the HINT button. X=0 - button inactive, X=1 - active. \\ \hline
 \end{longtable}
 
 \clearpage
@@ -525,18 +525,18 @@ All questions regarding operation, configuration, and modification of the «ST-M
 \begin{tabular}{|c|l|}
 \hline
 \textbf{Code} & \textbf{Theme Name} \\ \hline
-    0 & Default — standard theme (default) \\
-    1 & Neon Night — bright neon colours \\
-    2 & Forest Glade — natural green and brown shades \\
-    3 & Ocean Breeze — marine theme with blue tones \\
-    4 & Royal Purple — noble purple shades \\
-    5 & Autumn Sunset — warm autumn colours \\
-    6 & Arctic Ice — cool pastel tones \\
-    7 & Desert Sand — sandy and earthy shades \\
-    8 & Candy Land — bright candy colours \\
-    9 & Midnight Oil — dark saturated tones \\
-    10 & Spring Meadow — fresh spring colours \\
-    11 & Classic Elegance — restrained classic palette \\
+    0 & Default - standard theme (default) \\
+    1 & Neon Night - bright neon colours \\
+    2 & Forest Glade - natural green and brown shades \\
+    3 & Ocean Breeze - marine theme with blue tones \\
+    4 & Royal Purple - noble purple shades \\
+    5 & Autumn Sunset - warm autumn colours \\
+    6 & Arctic Ice - cool pastel tones \\
+    7 & Desert Sand - sandy and earthy shades \\
+    8 & Candy Land - bright candy colours \\
+    9 & Midnight Oil - dark saturated tones \\
+    10 & Spring Meadow - fresh spring colours \\
+    11 & Classic Elegance - restrained classic palette \\
 \hline
 \end{tabular}
 \end{center}
