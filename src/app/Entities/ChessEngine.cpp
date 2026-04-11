@@ -117,6 +117,7 @@ void ChessEngine::loop()
     }
     // Ход легальный – обновляем счётчик 50 ходов
     updateFiftyMoveClock(pieceType, isCapture);  // ← используем ДО изменения доски
+    updateEpSquare(c);
     std::string playerMove = formatPGNMove(fromIdx, toIdx, isCapture, pieceType);
     // Проверка, не поставил ли человек мат
     makeBackup();
@@ -164,7 +165,6 @@ void ChessEngine::loop()
 
     }
     pgn->addMove(playerMove);
-    updateEpSquare(playerMove);
 #if SHOW_BOARD
     printf("%s", showBoard().c_str());
 #endif
@@ -190,6 +190,7 @@ void ChessEngine::loop()
     // Из сохранённой доски (bBackup) получаем тип фигуры и было ли взятие
     int pieceTypeE = bBackup[fromIdxE] & 7;
     bool isCaptureE = (bBackup[toIdxE] != 0);
+    updateEpSquare(cE);
     // Форматируем ход
     std::string engineMove = formatPGNMove(fromIdxE, toIdxE, isCaptureE, pieceTypeE);
     // Ход легальный – обновляем счётчик 50 ходов
@@ -225,7 +226,6 @@ void ChessEngine::loop()
 #endif
     }
     pgn->addMove(engineMove);
-    updateEpSquare(engineMove);
 #if SHOW_BOARD
     printf("%s", showBoard().c_str());
 #endif

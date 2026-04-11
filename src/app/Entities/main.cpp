@@ -243,8 +243,7 @@ void fullTest()
     qDebug() << "=====en passant Test=====";
     eb = new ChessEngine(PVP);
     eb->setMove("e2e4"); eb->setMove("b8c6");
-    eb->setMove("e4e5");
-    eb->setMove("d7d5");
+    eb->setMove("e4e5"); eb->setMove("d7d5");
     try {
         bool isAllow = eb->checkMove("e5d6");
         qDebug() << "e5d6 en passant allow?  must true:" <<  isAllow;
@@ -327,7 +326,7 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    // fullTest();
+    fullTest();
 
     // сам с собой в pvp
     playCount = 1;
