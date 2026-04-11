@@ -19,6 +19,7 @@ public:
 
     virtual void setFEN(const std::string& fen) = 0;
     virtual const std::string getFEN() = 0;
+    virtual const std::string getPGN() = 0;
     virtual bool isGameActive() = 0;                // игра активна
     virtual Result getGameResult() = 0;
 

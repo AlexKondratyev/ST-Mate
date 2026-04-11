@@ -330,7 +330,9 @@ void Interactor::messege(const std::string &message)
 		if (e == nullptr)
 			printf("Game is inactive\n");
 		else
-			printf("PGN not available yet\n");
+		{
+			printf("PGN:\n%s\n",e->getPGN().c_str());
+		}
 	}
 }
 

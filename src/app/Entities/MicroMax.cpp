@@ -29,7 +29,9 @@
 #define U (1<<8) + 1
 #endif
 
+#pragma pack(push, 1)
 struct _ {int K,V;char X,Y,D;} A[U];           /* hash table, 16M+8 entries*/
+#pragma pack(pop)
 
 /* recursive minimax search, k=moving side, n=depth*/
 /* (q,l)=window, e=current eval. score, E=e.p. sqr.*/

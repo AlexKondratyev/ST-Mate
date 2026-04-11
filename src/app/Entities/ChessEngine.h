@@ -94,6 +94,7 @@ public:
     void setDate(int y,int m,int d) override;
     void setFEN(const std::string& fen) override;
     const std::string getFEN() override;
+    const std::string getPGN() override;
     bool isGameActive() override;
     Result getGameResult() override;
     bool isCastlingMove(const std::string& move, std::string& rockMove) override;

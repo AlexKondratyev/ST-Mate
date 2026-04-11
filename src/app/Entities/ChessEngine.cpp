@@ -236,6 +236,11 @@ void ChessEngine::loop()
     checkGameRule(est);
 }
 
+const std::string ChessEngine::getPGN()
+{
+	return pgn->generatePGN();
+}
+
 bool ChessEngine::isGameActive()
 {
     return isGame;

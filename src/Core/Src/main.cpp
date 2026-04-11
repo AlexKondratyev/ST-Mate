@@ -447,8 +447,6 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
-	  HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-	  HAL_Delay(1000);
   }
   /* USER CODE END Error_Handler_Debug */
 }
