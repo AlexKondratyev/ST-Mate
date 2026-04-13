@@ -70,10 +70,10 @@ const char* logo =
 "#   \\__ \\ / /______ / /|_/ //__  \\ / __// _ \\ #\n"
 "#  ___/ // //_____// /  / // _   // /_ /  __/ #\n"
 "# /____//_/       /_/  /_/ \\__,_/ \\__/ \\___/  #\n"
-"#          Your Silicon Grandmaster           #\n"
+"#                                             #\n"
 "###############################################\n"
 " ST-Mate %s (c)\n"
-" Developed by: Alex Kondratyev\n"
+" Developed by: Alexander Kondratyev\n"
 " System:  STM32F103C8 | 64kB Flash | 20kB RAM\n"
 " Engine:  micro-Max v4.8 by H.G. Muller\n"
 "###############################################\n\n";
@@ -137,7 +137,7 @@ void printInitialisation()
 			state_.dt.tm_min,
 			state_.dt.tm_sec);
 	printf("Mode: %s\n", modeStr[state_.portGameMode]);
-	printf("PRNG: %s", state_.isActivatePRNG ? "on":"off"); printf(". seed: %d\n", state_.seed);
+	printf("RNG: %s", state_.isActivatePRNG ? "ON":"OFF"); printf(". seed: %d\n", state_.seed);
 	printf("Initialization...successes \n");
 	printf(logo, version);
 }
