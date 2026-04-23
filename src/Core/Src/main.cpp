@@ -329,7 +329,7 @@ int main(void)
   if (state_.isActivatePRNG)	// if false, seed default
 	  state_.seed = fieldDriver.getSeed();
   else
-	  state_.seed = 25;  		// default seed for white 1. e2e4
+	  state_.seed = 13;  		// default seed for white 1. e2e4
   interactor.setSeed(state_.seed);
 
   printInitialisation();

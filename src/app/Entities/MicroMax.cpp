@@ -23,11 +23,7 @@
 #define K(A,B) *(int*)(T+A+(B&8)+S*(B&7))
 #define J(A) K(y+A,b[y])-K(x+A,u)-K(H+A,t)
 
-#ifndef STM32F103xB
-#define U (1<<24)
-#else
-#define U (1<<8) + 1
-#endif
+#define U (1<<7) + 1
 
 #pragma pack(push, 1)
 struct _ {int K,V;char X,Y,D;} A[U];           /* hash table, 16M+8 entries*/

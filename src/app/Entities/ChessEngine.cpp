@@ -3,7 +3,7 @@
 #include <memory.h>
 
 #define SHOW_MOVE true
-#define SHOW_THINK_TIME true
+#define SHOW_THINK_TIME false
 #define SHOW_HELP_MOVE true
 #define SHOW_ESTIMATE false
 #define SHOW_BOARD false
