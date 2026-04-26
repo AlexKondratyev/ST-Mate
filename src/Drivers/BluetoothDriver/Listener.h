@@ -17,6 +17,4 @@ public:
 	virtual void messege(const std::string &message) = 0;
 };
 
-
-
 #endif /* BLUETOOTHDRIVER_LISTENER_H_ */

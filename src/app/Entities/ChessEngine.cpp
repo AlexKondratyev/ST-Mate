@@ -301,10 +301,6 @@ bool ChessEngine::checkMove(const std::string& move)
     bool physicallyPossible = false;
     bool isCastling = false;
     int diff = t - f;
-
-    // ==========================================
-    // ИСПРАВЛЕНИЕ: Вынесли dir на общий уровень!
-    // ==========================================
     int dir = (pieceColor == 16) ? 16 : -16;
 
     // 1. БЫСТРЫЙ ФИЛЬТР ГЕОМЕТРИИ (Без поиска D)
@@ -783,7 +779,8 @@ std::string ChessEngine::formatPGNMove(int from, int to, bool isCapture, int pie
     return pgnMove;
 }
 
-void ChessEngine::updateFiftyMoveClock(int piece, bool isCapture) {
+void ChessEngine::updateFiftyMoveClock(int piece, bool isCapture) 
+{
     if (piece == 1 || piece == 2 || isCapture) {
         fiftyMoveClock = 0;
     } else {
@@ -791,7 +788,8 @@ void ChessEngine::updateFiftyMoveClock(int piece, bool isCapture) {
     }
 }
 
-bool ChessEngine::canCastle(int side, bool shortCastle) {
+bool ChessEngine::canCastle(int side, bool shortCastle) 
+{
     // 1. Проверяем, двигался ли король
     int kingIdx = (side == 8) ? 116 : 4; // 116 = e1 (0x74), 4 = e8 (0x04)
     if (b[kingIdx] & 32) return false; // король уже двигался
@@ -828,7 +826,8 @@ bool ChessEngine::canCastle(int side, bool shortCastle) {
     }
 }
 
-void ChessEngine::updateEpSquare(const std::string& move) {
+void ChessEngine::updateEpSquare(const std::string& move) 
+{
     if (move.length() < 4) {
         epSquare = 0;
         return;

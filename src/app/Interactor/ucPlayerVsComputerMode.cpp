@@ -21,8 +21,6 @@ void Interactor::figureMovePvsC(const std::string& position, int index, bool isS
     // ==========================================================
     if (!eMove.empty())
     {
-        // ... (логика рокировки остается без изменений) ...
-
         if (!isSet && inHand.empty())
         {
             if (position == eMove.substr(0, 2)) {
@@ -149,7 +147,6 @@ void Interactor::figureMovePvsC(const std::string& position, int index, bool isS
             	checkActiveGame();
             }
             // Если игра продолжается, запрашиваем ход у движка
-//            if (gameState == GAME) {
             eMove = e->getMove();
             if (!eMove.empty()) { // Подсвечиваем ход движка, чтобы игрок видел его ДО анимации конца игры
 					std::string from = eMove.substr(0, 2);

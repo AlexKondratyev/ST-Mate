@@ -42,7 +42,54 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
+// Приветствие при запуске
+static const char* logo =
+"###############################################\n"
+"#    ___________      __  ___        __       #\n"
+"#   / ___/_  __/     /  |/  /____   / /_ ___  #\n"
+"#   \\__ \\ / /______ / /|_/ //__  \\ / __// _ \\ #\n"
+"#  ___/ // //_____// /  / // _   // /_ /  __/ #\n"
+"# /____//_/       /_/  /_/ \\__,_/ \\__/ \\___/  #\n"
+"#                                             #\n"
+"###############################################\n"
+" ST-Mate %s (c)\n"
+" Developed by: Alexander Kondratyev\n"
+" System:  STM32F103C8 | 64kB Flash | 20kB RAM\n"
+" Engine:  micro-Max v4.8 by H.G. Muller\n"
+"###############################################\n\n";
 
+static const char* helpText =
+"\n=== SERVICE COMMANDS ===\n"
+"REBOOT          - Reboot device\n"
+"SERVICE:0/1     - Disable/enable service mode\n"
+"VOLT?           - Show CPU voltage\n"
+"CALIBRATE       - Start sensor calibration (board must be empty)\n"
+"TRIGLV?         - Show trigger level\n"
+"TRIGLV:X        - Set trigger level (X = integer)\n"
+"ALPHA?          - Show smoothing coefficient\n"
+"ALPHA:X         - Set smoothing coefficient (X = integer, 1/alpha)\n"
+"\n=== USER COMMANDS ===\n"
+"HELP            - Show this help\n"
+"EVENT?          - Show event name\n"
+"EVENT:X         - Set event name\n"
+"SITE?           - Show venue\n"
+"SITE:X          - Set venue\n"
+"TIME?           - Show current time\n"
+"TIME:dd.mm.yy HH:MM:SS - Set time\n"
+"ROUND?          - Show round number\n"
+"ROUND:X         - Set round number\n"
+"WHITE?          - Show white player name\n"
+"WHITE:X         - Set white player name\n"
+"BLACK?          - Show black player name\n"
+"BLACK:X         - Set black player name\n"
+"FEN?            - Show current position in FEN\n"
+"PGN?            - Show current game in PGN\n"
+"SEED?           - Show random seed\n"
+"SEED:X          - Set random seed (integer or string)\n"
+"BRIGHT?         - Show brightness level\n"
+"BRIGHT:X        - Set brightness (0-100)\n"
+"THEME:X         - Set color theme (0-11)\n"
+"HINTBTN:0/1     - Enable/disable hint button\n";
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/

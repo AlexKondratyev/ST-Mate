@@ -17,7 +17,7 @@
 
 #include <time.h>
 
-static const char* modeStr[]  = {"Engine black","PvP","Engine white"};
+static const char* modeStr[]  = {"Engine black","PvP","Engine white", "Diagnostic"};
 
 class Interactor : public InputBoundary, public Listener
 {

@@ -365,7 +365,7 @@ After the game ends, any movement of a piece resets the board to waiting for the
 \subsection{Text User Messages via Bluetooth}
 Using Bluetooth to obtain detailed information about moves and game state can be useful for analysis and learning, but is not required for basic operation.
 Via Bluetooth, ST-Mate can send text messages informing the user about the current state, move results, and other events.
-Completed moves are output in algebraic notation (e.g., “e2e4” for a pawn move from e2 to e4).
+Completed moves are output in algebraic notation (e.g., “e4” for a pawn move from e2 to e4).
 Moves that were rejected due to rule violations are accompanied by an error message (e.g., “White make invalid move e2e5”).
 At the end of the game, the result is displayed (e.g., “1-0” for white win, “0-1” for black win, “1/2-1/2” for draw).
 The PGN of the current game is also output, allowing it to be saved and analysed. Output for initialisation, start, game progress, and result in PGN format is shown in Fig. \ref{fig:log}.
@@ -380,7 +380,7 @@ The PGN of the current game is also output, allowing it to be saved and analysed
 \subsection{Sending Commands}
 After connecting to the board via Bluetooth, the user can send text commands.
 Commands are case-insensitive.
-Supported queries and commands are listed in Appendix A.
+Supported queries and commands are listed in \nameref{sec:protocol}, and also when sending the command HELP\textbackslash{r}\textbackslash{n}, a help message with all available commands is displayed.
 
 \subsection{Usage Examples}
 \begin{verbatim}
@@ -492,6 +492,7 @@ All questions regarding operation, configuration, and modification of the «ST-M
 \texttt{ALPHA?} & Request current exponential smoothing coefficient (default 8). \\ \hline
 \texttt{ALPHA:X} & Set exponential smoothing coefficient (X is an integer). \\ \hline
 \multicolumn{2}{|c|}{\textbf{User Commands}} \\ \hline
+\texttt{HELP} & Request list of available commands. \\ \hline
 \texttt{EVENT?} & Request tournament or match name. \\ \hline
 \texttt{EVENT:X} & Set tournament or match name (e.g., EVENT:Casual Game). \\ \hline
 \texttt{SITE?} & Request venue. \\ \hline

@@ -62,21 +62,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-// Приветствие при запуске
-const char* logo =
-"###############################################\n"
-"#    ___________      __  ___        __       #\n"
-"#   / ___/_  __/     /  |/  /____   / /_ ___  #\n"
-"#   \\__ \\ / /______ / /|_/ //__  \\ / __// _ \\ #\n"
-"#  ___/ // //_____// /  / // _   // /_ /  __/ #\n"
-"# /____//_/       /_/  /_/ \\__,_/ \\__/ \\___/  #\n"
-"#                                             #\n"
-"###############################################\n"
-" ST-Mate %s (c)\n"
-" Developed by: Alexander Kondratyev\n"
-" System:  STM32F103C8 | 64kB Flash | 20kB RAM\n"
-" Engine:  micro-Max v4.8 by H.G. Muller\n"
-"###############################################\n\n";
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -147,6 +133,10 @@ class MainListener : public Listener
 	void messege(const std::string &message) override
 	{
 		int param = 0;
+		if (message.find("HELP") != std::string::npos)
+		{
+			printf(helpText);
+		}
 		if (message.find("REBOOT") != std::string::npos)
 		{
 			state_.needReboot = true;
@@ -293,7 +283,10 @@ int main(void)
   if (state_.isNeedHelp)
   {
 	  if (state_.isActivatePRNG)
+	  {
 		  state_.fieldTest = true;
+		  state_.portGameMode = DIAGNOSTIC;
+	  }
 	  else
 		  state_.needForceCalibrate = true;
   }
