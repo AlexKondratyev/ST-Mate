@@ -1,84 +1,71 @@
 ![alt text](/docs/logo.svg)
 
-# ST-Mate – шахматная доска на STM32F103C8
+![](/docs/st-mate-board.png)
+
+# ST-Mate – Chess Board on STM32F103C8
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC_BY--NC--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
-ST-Mate — это порт легендарного шахматного движка **micro-Max** (автор H.G. Muller) на микроконтроллер STM32F103C8 (Blue Pill). Проект реализует полноценную игру в шахматы с возможностью игры человека против человека и человека против компьютера.
+ST-Mate is a port of the legendary chess engine **micro-Max** (author H.G. Muller) to the STM32F103C8 microcontroller (Blue Pill). The project implements a full chess game with the ability to play human vs human and human vs computer.
 
-## Особенности
+## Features
 
-- **Движок micro-Max 4.8** с полным набором функций (глубинный поиск, хеш‑таблицы, отсечения, рокировка, взятие на проходе)
-- **Адаптация под STM32F103C8** (20 кБ RAM, 64 кБ Flash)
-- **Режимы игры**:
-  - Человек против человека (PVP)
-  - Человек против компьютера (игрок может играть как белыми, так и черными)
-- **Генерация PGN** с записью партий в стандартном формате
-- **Визуализация доски** через UART, Bluetooth или LED-матрицу
-- **Подсказки**:
-  - Подсветка возможных ходов
-  - Кнопка вызова подсказки
-- **Сохранение настроек во Flash-памяти** 
+- **micro-Max 4.8 Engine** with full set of features (deep search, hash tables, pruning, castling, en passant)
+- **Adaptation for STM32F103C8** (20 KB RAM, 64 KB Flash)
+- **Game modes**:
+  - Human vs Human (PVP)
+  - Human vs Computer (player can play as white or black)
+- **PGN Generation** with recording games in standard format
+- **Board visualization** via UART, Bluetooth or LED matrix
+- **Hints**:
+  - Highlighting possible moves
+  - Hint button
+- **Saving settings in Flash memory**
 
-## Содержание
+## Contents
 
-- [Сборка и прошивка](#сборка-и-прошивка)
-- [Использование](#использование)
-- [Структура проекта](#структура-проекта)
-- [Аппаратная часть](#аппаратная-часть)
-- [Лицензия](#лицензия)
-- [Благодарности](#благодарности)
+- [Build and Flash](#build-and-flash)
+- [Usage](#usage)
+- [Hardware](#hardware)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
 
-## Сборка и прошивка
-### Инструкция по сборке
+## Build and Flash
+### Build Instructions
 
-1. Клонируйте репозиторий:
+1. Clone the repository:
    ```bash
    git clone https://github.com/AlexKondratyev/ST-Mate.git
    cd STMate
 
-### Требования
-- STM32F103C8 (Blue Pill) или совместимая плата
-- USB‑UART адаптер (для загрузки и отладки)
-- Среда разработки:
+### Requirements
+- STM32F103C8 (Blue Pill) or compatible board
+- USB-UART adapter (for loading and debugging)
+- Development environment:
   - **STM32CubeIDE** + ARM GCC
-  - или **PlatformIO** (рекомендуется)
 
-## Использование
-### Управление
-- Подсказка: нажмите кнопку HELP – движок покажет лучший ход.
-- Смена режима: переключите режим с помощю поворотного переключателя.
-- Сброс: нажмите кнопку RESET или отправьте команду REBOOT.
-- Останое можно найти в руководстве user_manual.pdf.
-### Команды Bluetooth
-  Все доступные команды описаны в user_manual.pdf приложение А.
+## Usage
+### Control
+- Hint: press the HELP button – the engine will show the best move.
+- Mode change: switch mode using the rotary switch.
+- Reset: press the RESET button or send the REBOOT command.
+- The rest can be found in the user_manual.pdf manual.
+### Bluetooth Commands
+  All available commands are described in user_manual.pdf appendix A.
 
-### Структура проекта
-STMate/
-├── .github/            # CI/CD и шаблоны issue
-├── docs/               # документация, схемы, фото
-├── Drives/             # драйверы для периферии (LED, Flash, Bluetooth)
-├── app/                # бизнес-логика (Interactor, Presenter, Controller)
-├── Entities/           # сущности: ChessEngine, ChessPGN, Fields, Converter
-├── STM32F103C8/        # HAL-конфигурация для STM32
-├── main.cpp            # точка входа
-├── platformio.ini      # конфигурация PlatformIO
-└── README.md
+## Hardware
+Microcontroller: STM32F103C8 (72 MHz, 64 KB Flash, 20 KB RAM)
+Field sensors: Hall sensor matrix SS49E (64 pcs.)
+Display: ARGB LED strip (WS2812)
+Communication: Bluetooth module (HC-06)
+Power: 5V via USB.
 
-## Аппаратная часть
-Микроконтроллер: STM32F103C8 (72 МГц, 64 кБ Flash, 20 кБ RAM)
-Датчики полей: матрица датчиков Холла SS49E (64 шт.)
-Отображение: ARGB LED лента (WS2812)
-Коммуникация: Bluetooth-модуль (HC-06)
-Питание: 5В через USB.
+## License
+> **Software** is distributed under the **GPLv3** license.  
+> **Hardware** (schematics, documentation) is distributed under the **CC BY-NC-SA 4.0** license (non-commercial use with attribution and distribution under the same conditions).
 
-## Лицензия
-> **Программное обеспечение** распространяется под лицензией **GPLv3**.  
-> **Аппаратная часть** (схемы, документация) распространяется под лицензией **CC BY-NC-SA 4.0** (некоммерческое использование с указанием авторства и распространением на тех же условиях).
-
-## Благодарности
- - H.G. Muller – автор micro-Max
- - Diego Cueva – авторы ранних портов на AVR
- - Сообщество STM32 за полезные советы
- - Жене и сыну за тестирование
+## Acknowledgments
+ - H.G. Muller – author of micro-Max
+ - STM32 community for useful advice
+ - Wife and son for testing

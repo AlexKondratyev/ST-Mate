@@ -132,9 +132,9 @@ void Presenter::run()
 				}
 				// LAYER 2: Available moves
 				if (availableNormalMoves[i]) {
-					r = theme.avalibleMove.r;
-					g = theme.avalibleMove.g;
-					b = theme.avalibleMove.b;
+					r = theme.availableMove.r;
+					g = theme.availableMove.g;
+					b = theme.availableMove.b;
 				}
 				if (availableAttackMoves[i]) { // Cell for capture
 					r = (theme.moveAttack.r * pulseSlow) / 255;
