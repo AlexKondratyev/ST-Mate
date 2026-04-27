@@ -13,34 +13,34 @@ enum class GameResult {
 
 class ChessPGN {
 private:
-    // PGN теги
-    std::string event;      // Название турнира или события
-    std::string site;       // Место проведения
-    std::string date;       // Дата в формате YYYY.MM.DD
-    std::string round;      // Номер тура
-    std::string white;      // Имя игрока белыми
-    std::string black;      // Имя игрока черными
-    std::string result;     // Результат ("1-0", "0-1", "1/2-1/2", "*")
+    // PGN tags
+    std::string event;      // Tournament or event name
+    std::string site;       // Venue
+    std::string date;       // Date in YYYY.MM.DD format
+    std::string round;      // Round number
+    std::string white;      // White player name
+    std::string black;      // Black player name
+    std::string result;     // Result ("1-0", "0-1", "1/2-1/2", "*")
     std::string fen;       // FEN
 
-    // Ходы игры
+    // Game moves
     std::vector<std::string> moves;
-    // Комментарии
+    // Comments
 //    std::vector<std::string> comments;
-    // Результат игры
+    // Game result
     GameResult gameResult;
 
-    // Вспомогательные функции
+    // Helper functions
     std::string formatTag(const std::string& name, const std::string& value);
     std::string formatMoves();
     std::string resultToString(GameResult res);
 
 public:
-    // Конструкторы
+    // Constructors
     ChessPGN();
     ChessPGN(const std::string& whiteName, const std::string& blackName);
 
-    // Сеттеры для тегов
+    // Setters for tags
     void setEvent(const std::string& e) { event = e; }
     void setSite(const std::string& s) { site = s; }
     void setDate(const std::string& d) { date = d; }
@@ -50,23 +50,23 @@ public:
     void setResult(GameResult res) { gameResult = res; }
     void setFEN(const std::string& f) { fen = f; }
 
-    // Добавление ходов
+    // Add moves
     void addMove(const std::string& move);
 //    void addMoveWithComment(const std::string& move, const std::string& comment);
 //    void addComment(const std::string& comment);
 
-    // Установка результата
+    // Set result
     void setWhiteWin();
     void setBlackWin();
     void setDraw();
 
-    // Генерация PGN строки
+    // Generate PGN string
     std::string generatePGN();
 
-    // Очистка
+    // Clear
     void clear();
 
-    // Геттеры
+    // Getters
     std::string getResult() const { return result; }
     GameResult getResultEnum() const { return gameResult; }
     std::vector<std::string> getMoves() const { return moves; }

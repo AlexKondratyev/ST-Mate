@@ -15,19 +15,19 @@ void ChessEngine::setFEN(const std::string &fen)
 
     pgn->setFEN(fen);
 
-    // 1. Очищаем только игровую часть доски (левые 8x8),
-    // не трогая правую часть, где хранится таблица оценки позиции.
+    // 1. Clear only the playable part of the board (left 8x8),
+    // leaving the right side intact where the evaluation table is stored.
     for (int r = 0; r < 8; r++) {
         for (int f = 0; f < 8; f++) {
             b[r * 16 + f] = 0;
         }
     }
 
-    int rank = 0; // 0 = 8-я горизонталь
-    int file = 0; // 0 = вертикаль 'a'
+    int rank = 0; // 0 = 8th rank
+    int file = 0; // 0 = file 'a'
     int i = 0;
 
-    // 2. Парсим расположение фигур
+    // 2. Parse piece placement
     while (fen[i] != ' ' && fen[i] != '\0') {
         char c = fen[i++];
         if (c == '/') {
@@ -36,15 +36,15 @@ void ChessEngine::setFEN(const std::string &fen)
         } else if (c >= '1' && c <= '8') {
             file += (c - '0');
         } else {
-            // Определяем цвет (Белые = 8, Черные = 16)
+            // Determine color (White = 8, Black = 16)
             int color = (c >= 'A' && c <= 'Z') ? 8 : 16;
 
-            // Переводим в нижний регистр для свитча
+            // Convert to lowercase for switch
             char lower = (c >= 'A' && c <= 'Z') ? (c + 32) : c;
 
             int type = 0;
             switch (lower) {
-            case 'p': type = (color == 8) ? 1 : 2; break; // У пешек разные типы в Micro-Max
+            case 'p': type = (color == 8) ? 1 : 2; break; // Pawns have different types in Micro-Max
             case 'n': type = 3; break;
             case 'k': type = 4; break;
             case 'b': type = 5; break;
@@ -52,46 +52,46 @@ void ChessEngine::setFEN(const std::string &fen)
             case 'q': type = 7; break;
             }
 
-            // Ставим флаг 32 (non-virgin) всем фигурам по умолчанию,
-            // чтобы запретить нелегальные рокировки.
+            // Set flag 32 (non-virgin) to all pieces by default,
+            // to prevent illegal castling.
             b[rank * 16 + file] = color | type | 32;
             file++;
         }
     }
 
     if (fen[i] == '\0') return;
-    if (fen[i] == ' ') i++; // Пропускаем пробел
+    if (fen[i] == ' ') i++; // Skip space
 
-    // 3. Парсим чей ход (инвертировано)
+    // 3. Parse whose turn (inverted)
     if (fen[i] == 'b') {
-        k = WHITE;  // Ход белых
+        k = WHITE;  // White to move
     } else if (fen[i] == 'w') {
-        k = BLACK; // Ход черных
+        k = BLACK; // Black to move
     }
-    kLast = k; // Синхронизируем для корректной валидации
+    kLast = k; // Synchronize for correct validation
     i++;
 
     if (fen[i] == '\0') return;
-    if (fen[i] == ' ') i++; // Пропускаем пробел
+    if (fen[i] == ' ') i++; // Skip space
 
-    // 4. Парсим права на рокировку (снимаем флаг 32 с девственных фигур)
+    // 4. Parse castling rights (remove flag 32 from virgin pieces)
     while (fen[i] != ' ' && fen[i] != '\0') {
         switch (fen[i]) {
         case 'K':
-            b[7 * 16 + 4] &= ~32; // Белый король e1
-            b[7 * 16 + 7] &= ~32; // Белая ладья h1
+            b[7 * 16 + 4] &= ~32; // White king e1
+            b[7 * 16 + 7] &= ~32; // White rook h1
             break;
         case 'Q':
-            b[7 * 16 + 4] &= ~32; // Белый король e1
-            b[7 * 16 + 0] &= ~32; // Белая ладья a1
+            b[7 * 16 + 4] &= ~32; // White king e1
+            b[7 * 16 + 0] &= ~32; // White rook a1
             break;
         case 'k':
-            b[0 * 16 + 4] &= ~32; // Черный король e8
-            b[0 * 16 + 7] &= ~32; // Черная ладья h8
+            b[0 * 16 + 4] &= ~32; // Black king e8
+            b[0 * 16 + 7] &= ~32; // Black rook h8
             break;
         case 'q':
-            b[0 * 16 + 4] &= ~32; // Черный король e8
-            b[0 * 16 + 0] &= ~32; // Черная ладья a8
+            b[0 * 16 + 4] &= ~32; // Black king e8
+            b[0 * 16 + 0] &= ~32; // Black rook a8
             break;
         }
         i++;
@@ -102,12 +102,12 @@ const std::string ChessEngine::getFEN()
 {
     std::string fen;
 
-    // 1. Расположение фигур (8 рядов)
+    // 1. Piece placement (8 ranks)
     for (int rank = 7; rank >= 0; rank--) {
         int emptyCount = 0;
 
         for (int file = 0; file < 8; file++) {
-            int idx = (7 - rank) * 16 + file; // индекс в формате 0x88 (ряд 0 = 8-я горизонталь)
+            int idx = (7 - rank) * 16 + file; // index in 0x88 format (row 0 = rank 8)
             int piece = b[idx];
 
             if (piece == 0) {
@@ -122,10 +122,10 @@ const std::string ChessEngine::getFEN()
                 int type = piece & 7;
                 char pieceChar = 0;
 
-                // Определяем символ фигуры
+                // Determine the piece symbol
                 switch (type) {
-                case 1: pieceChar = 'P'; break; // белая пешка
-                case 2: pieceChar = 'P'; break; // чёрная пешка (будет строчной)
+                case 1: pieceChar = 'P'; break; // white pawn
+                case 2: pieceChar = 'P'; break; // black pawn (will be lowercase)
                 case 3: pieceChar = 'N'; break;
                 case 4: pieceChar = 'K'; break;
                 case 5: pieceChar = 'B'; break;
@@ -133,7 +133,7 @@ const std::string ChessEngine::getFEN()
                 case 7: pieceChar = 'Q'; break;
                 }
 
-                // Белые (8) – заглавные, чёрные (16) – строчные
+                // White (8) uses uppercase, black (16) uses lowercase
                 if (color == 8) {
                     fen += pieceChar;
                 } else {
@@ -150,7 +150,7 @@ const std::string ChessEngine::getFEN()
     }
 
 
-    // 2. Чей ход
+    // 2. Side to move
     fen += ' ';
     if (getCurrentSide() == WHITE) {
         fen += 'w';
@@ -158,29 +158,29 @@ const std::string ChessEngine::getFEN()
         fen += 'b';
     }
 
-    // 3. Права на рокировку
+    // 3. Castling rights
     fen += ' ';
     bool hasCastling = false;
 
-    // Белые: проверяем, что король и ладьи не двигались (флаг 32 не установлен)
-    if (!(b[116] & 32)) { // белый король e1 (0x74)
-        if (!(b[119] & 32)) { // белая ладья h1 (0x77)
+    // White: check that king and rooks have not moved (flag 32 not set)
+    if (!(b[116] & 32)) { // white king e1 (0x74)
+        if (!(b[119] & 32)) { // white rook h1 (0x77)
             fen += 'K';
             hasCastling = true;
         }
-        if (!(b[112] & 32)) { // белая ладья a1 (0x70)
+        if (!(b[112] & 32)) { // white rook a1 (0x70)
             fen += 'Q';
             hasCastling = true;
         }
     }
 
-    // Чёрные
-    if (!(b[4] & 32)) { // чёрный король e8 (0x04)
-        if (!(b[7] & 32)) { // чёрная ладья h8 (0x07)
+    // Black
+    if (!(b[4] & 32)) { // black king e8 (0x04)
+        if (!(b[7] & 32)) { // black rook h8 (0x07)
             fen += 'k';
             hasCastling = true;
         }
-        if (!(b[0] & 32)) { // чёрная ладья a8 (0x00)
+        if (!(b[0] & 32)) { // black rook a8 (0x00)
             fen += 'q';
             hasCastling = true;
         }
@@ -190,7 +190,7 @@ const std::string ChessEngine::getFEN()
         fen += '-';
     }
 
-    // 4. Взятие на проходе
+    // 4. En passant target square
     fen += ' ';
     if (epSquare != 0) {
         int file = epSquare & 7;
@@ -201,11 +201,11 @@ const std::string ChessEngine::getFEN()
         fen += '-';
     }
 
-    // 5. Полуходовой счётчик (правило 50 ходов)
+    // 5. Halfmove clock (50-move rule)
     fen += ' ';
-    fen += std::to_string(fiftyMoveClock); // в FEN считаются полуходы
+    fen += std::to_string(fiftyMoveClock); // FEN counts halfmoves
 
-    // 6. Номер хода (начинается с 1)
+    // 6. Move number (starts from 1)
     fen += ' ';
     fen += std::to_string(moveNumber + 1);
 

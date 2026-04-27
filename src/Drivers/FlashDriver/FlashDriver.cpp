@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <memory.h>
 
-// Команды
+// Commands
 #define CMD_WRITE_ENABLE     0x06
 #define CMD_WRITE_DISABLE    0x04
 #define CMD_READ_STATUS      0x05
@@ -14,7 +14,7 @@
 #define CMD_CHIP_ERASE       0xC7
 #define CMD_READ_ID          0x9F
 
-// Биты регистра состояния
+// Bits of the status register
 #define STATUS_WIP           0x01   ///< Write In Progress
 #define STATUS_WEL           0x02   ///< Write Enable Latch
 
@@ -22,7 +22,7 @@ FlashDriver::FlashDriver(SPI_HandleTypeDef* spi, GPIO_TypeDef* csPort, uint16_t 
     : spi_(spi), csPort_(csPort), csPin_(csPin)
 {
 	init();
-	// Проверка ID. Не должно быть -1
+	// ID check. Should not be -1
 	id = readID();
 }
 
@@ -44,7 +44,7 @@ bool FlashDriver::writeEnable() {
     csHigh();
     if (status != HAL_OK) return false;
 
-    // Проверяем, что бит WEL установлен
+    // Check that the WEL bit is set
     uint8_t sr = readStatusRegister();
     return (sr & STATUS_WEL) != 0;
 }
@@ -69,12 +69,12 @@ uint8_t FlashDriver::readStatusRegister() {
 
 void FlashDriver::waitForReady() {
     while ((readStatusRegister() & STATUS_WIP) != 0) {
-        // Можно добавить задержку или переключение задач в RTOS
+        // You can add a delay or task switching in RTOS
     }
 }
 
 bool FlashDriver::init() {
-    // Настройка пина CS как выхода
+    // Setting up the CS pin as output
     GPIO_InitTypeDef gpioInit;
     gpioInit.Pin = csPin_;
     gpioInit.Mode = GPIO_MODE_OUTPUT_PP;
@@ -82,11 +82,11 @@ bool FlashDriver::init() {
     HAL_GPIO_Init(csPort_, &gpioInit);
     csHigh();
 
-    // Проверка ID (опционально)
+    // ID check (optional)
     uint32_t id = readID();
-    // Для N25Q032 ожидаемый ID: 0x20 0xBA 0x18 (может отличаться)
-    // Если ID некорректен, можно вернуть false.
-    // В данном примере считаем успехом любое значение, отличное от 0xFFFFFF.
+    // For N25Q032 expected ID: 0x20 0xBA 0x18 (may differ)
+    // If ID is invalid, you can return false.
+    // In this example, we consider any value other than 0xFFFFFF as success.
     return (id != 0xFFFFFFFF);
 }
 
@@ -102,7 +102,7 @@ uint32_t FlashDriver::readID() {
 
 bool FlashDriver::writePage(uint32_t pageAddr, const uint8_t* data, uint32_t len) {
     if (len == 0 || len > 256) return false;
-    if ((pageAddr & 0xFF) != 0) return false; // Адрес должен быть кратен 256
+    if ((pageAddr & 0xFF) != 0) return false; // Address must be a multiple of 256
 
     if (!writeEnable()) return false;
 
@@ -127,7 +127,7 @@ bool FlashDriver::writePage(uint32_t pageAddr, const uint8_t* data, uint32_t len
 }
 
 bool FlashDriver::eraseSector(uint32_t sectorAddr) {
-    if ((sectorAddr & 0xFFF) != 0) return false; // Адрес должен быть кратен 4KB
+    if ((sectorAddr & 0xFFF) != 0) return false; // Address must be a multiple of 4KB
     if (!writeEnable()) return false;
 
     uint8_t cmd[4];
@@ -146,7 +146,7 @@ bool FlashDriver::eraseSector(uint32_t sectorAddr) {
 }
 
 bool FlashDriver::eraseBlock(uint32_t blockAddr) {
-    if ((blockAddr & 0xFFFF) != 0) return false; // Адрес должен быть кратен 64KB
+    if ((blockAddr & 0xFFFF) != 0) return false; // Address must be a multiple of 64KB
     if (!writeEnable()) return false;
 
     uint8_t cmd[4];
@@ -177,7 +177,7 @@ bool FlashDriver::eraseChip() {
     return true;
 }
 
-// N25Q032.cpp (добавления)
+// N25Q032.cpp (additions)
 
 bool FlashDriver::eraseSectorContaining(uint32_t addr) {
     uint32_t sectorAddr = addr & ~(SECTOR_SIZE - 1);
@@ -226,30 +226,30 @@ bool FlashDriver::write(uint32_t addr, const uint8_t* data, uint32_t len) {
     uint32_t firstSector = addr / SECTOR_SIZE;
     uint32_t lastSector  = (addr + len - 1) / SECTOR_SIZE;
 
-    // Буфер для одного сектора (4 КБ)
+    // Buffer for one sector (4 KB)
     uint8_t sectorBuffer[SECTOR_SIZE];
 
     for (uint32_t sectorIdx = firstSector; sectorIdx <= lastSector; ++sectorIdx) {
         uint32_t sectorStart = sectorIdx * SECTOR_SIZE;
         uint32_t sectorEnd   = sectorStart + SECTOR_SIZE - 1;
 
-        // Определяем диапазон внутри сектора, который нужно обновить
+        // Determine the range within the sector that needs to be updated
         uint32_t updateStart = (addr > sectorStart) ? addr : sectorStart;
         uint32_t updateEnd   = (addr + len - 1 < sectorEnd) ? (addr + len - 1) : sectorEnd;
-        uint32_t updateOffset = updateStart - sectorStart; // смещение в секторе
+        uint32_t updateOffset = updateStart - sectorStart; // offset in sector
         uint32_t updateLen    = updateEnd - updateStart + 1;
 
-        // Читаем весь сектор
+        // Read the entire sector
         if (!read(sectorStart, sectorBuffer, SECTOR_SIZE)) return false;
 
-        // Заменяем нужную часть
+        // Replace the required part
         const uint8_t* srcData = data + (updateStart - addr);
         memcpy(sectorBuffer + updateOffset, srcData, updateLen);
 
-        // Стираем сектор
+        // Erase sector
         if (!eraseSector(sectorStart)) return false;
 
-        // Записываем сектор обратно (постранично)
+        // Write the sector back (page by page)
         for (uint32_t page = 0; page < SECTOR_SIZE; page += PAGE_SIZE) {
             if (!writePage(sectorStart + page, sectorBuffer + page, PAGE_SIZE)) return false;
         }

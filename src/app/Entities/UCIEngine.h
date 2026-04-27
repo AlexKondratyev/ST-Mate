@@ -16,14 +16,14 @@ private:
     std::atomic<bool> searching;
     std::atomic<bool> quitFlag;
 
-    // Параметры поиска
+    // Search parameters
     int searchDepth;
     int searchMovetime;
     int searchWTime, searchBTime;
     int searchWInc, searchBInc;
     int searchMovesToGo;
 
-    // Текущая позиция
+    // Current position
     std::string currentFEN;
     std::vector<std::string> currentMoves;
 
@@ -39,8 +39,8 @@ public:
     UCIEngine();
     ~UCIEngine();
 
-    void loop();           // основной цикл UCI
-    void stop();           // остановка поиска
+    void loop();           // main UCI loop
+    void stop();           // stop search
     bool isSearching() const { return searching; }
 };
 

@@ -218,7 +218,7 @@ void Interactor::setDateTime(const struct tm &datetime)
 void Interactor::setIsNeedHelp(bool isNeedHelp)
 {
     static bool lastButtonState = false;
-    // Если кнопка была отпущена, а теперь нажата — это фронт
+    // If the button was released, but now pressed — this is the front
     if (isNeedHelp && !lastButtonState) {
         this->isNeedHelp = true;
     }
@@ -253,10 +253,10 @@ void Interactor::messege(const std::string &message)
 	}
 	if (message.find("EVENT:") != std::string::npos)
 	{
-	    const char* value = message.c_str() + 6; // пропускаем "EVENT:"
-	    // Копируем в массив с ограничением длины
+	    const char* value = message.c_str() + 6; // skip "EVENT:"
+	    // Copy to array with length limit
 	    strncpy(settingsPGN.event, value, sizeof(settingsPGN.event) - 1);
-	    settingsPGN.event[sizeof(settingsPGN.event) - 1] = '\0'; // гарантия завершения
+	    settingsPGN.event[sizeof(settingsPGN.event) - 1] = '\0'; // guarantee termination
 	    savePlaySettings();
 	    printf("Event set: %s\n", settingsPGN.event);
 	}
@@ -267,10 +267,10 @@ void Interactor::messege(const std::string &message)
 	}
 	if (message.find("SITE:") != std::string::npos)
 	{
-	    const char* value = message.c_str() + 5; // пропускаем "SITE:"
-	    // Копируем в массив с ограничением длины
+	    const char* value = message.c_str() + 5; // skip "SITE:"
+	    // Copy to array with length limit
 	    strncpy(settingsPGN.site, value, sizeof(settingsPGN.site) - 1);
-	    settingsPGN.site[sizeof(settingsPGN.site) - 1] = '\0'; // гарантия завершения
+	    settingsPGN.site[sizeof(settingsPGN.site) - 1] = '\0'; // guarantee termination
 	    savePlaySettings();
 	    printf("Site set: %s\n", settingsPGN.site);
 	}
@@ -296,10 +296,10 @@ void Interactor::messege(const std::string &message)
 	}
 	if (message.find("WHITE:") != std::string::npos)
 	{
-	    const char* value = message.c_str() + 6; // пропускаем "WHITE:"
-	    // Копируем в массив с ограничением длины
+	    const char* value = message.c_str() + 6; // skip "WHITE:"
+	    // Copy to array with length limit
 	    strncpy(settingsPGN.white, value, sizeof(settingsPGN.white) - 1);
-	    settingsPGN.white[sizeof(settingsPGN.white) - 1] = '\0'; // гарантия завершения
+	    settingsPGN.white[sizeof(settingsPGN.white) - 1] = '\0'; // guarantee termination
 	    savePlaySettings();
 	    printf("White name set: %s\n", settingsPGN.white);
 	}
@@ -310,10 +310,10 @@ void Interactor::messege(const std::string &message)
 	}
 	if (message.find("BLACK:") != std::string::npos)
 	{
-	    const char* value = message.c_str() + 6; // пропускаем "BLACK:"
-	    // Копируем в массив с ограничением длины
+	    const char* value = message.c_str() + 6; // skip "BLACK:"
+	    // Copy to array with length limit
 	    strncpy(settingsPGN.black, value, sizeof(settingsPGN.black) - 1);
-	    settingsPGN.black[sizeof(settingsPGN.black) - 1] = '\0'; // гарантия завершения
+	    settingsPGN.black[sizeof(settingsPGN.black) - 1] = '\0'; // guarantee termination
 	    savePlaySettings();
 	    printf("Black name set: %s\n", settingsPGN.black);
 	}

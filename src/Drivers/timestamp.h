@@ -17,7 +17,7 @@
 // ChessEngine.cpp
 uint64_t getCurrentTimeMs() {
 #ifdef STM32F103xB
-    return HAL_GetTick();  // миллисекунды от старта
+    return HAL_GetTick();  // milliseconds from start
 #else
     static auto start = std::chrono::steady_clock::now();
     auto now = std::chrono::steady_clock::now();

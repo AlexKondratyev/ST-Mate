@@ -98,9 +98,9 @@ void ChessEngine::loop()
     if (!isGame) return;
 
     // ==========================================
-    // ХОД ЧЕЛОВЕКА
+    // HUMAN MOVE
     // ==========================================
-    // Сохраняем индексы ДО вызова D (пока доска не изменена)
+    // Save indices BEFORE calling D (while the board is not changed)
     int fromIdx = c[0] - 16 * c[1] + 799;
     int toIdx   = c[2] - 16 * c[3] + 799;
     int pieceType = b[c[0] - 16 * c[1] + 799] & 7;
@@ -110,18 +110,18 @@ void ChessEngine::loop()
     K=I;
     if(*c-10) K=*c-16*c[1]+799,L=c[2]-16*c[3]+799;
     int est = D(-I,I,Q,O,1,searchDepth);
-    if(!isMoveValid()) // Если ход нелегальный, ждем другой
+    if(!isMoveValid()) // If the move is illegal, wait for another
     {
         applyBackup();
         return;
     }
-    // Ход легальный – обновляем счётчик 50 ходов
-    updateFiftyMoveClock(pieceType, isCapture);  // ← используем ДО изменения доски
+    // Legal move — update the 50-move counter
+    updateFiftyMoveClock(pieceType, isCapture);  // ← use BEFORE changing the board
     updateEpSquare(c);
     std::string playerMove = formatPGNMove(fromIdx, toIdx, isCapture, pieceType);
-    // Проверка, не поставил ли человек мат
+    // Check if the human put the engine in mate
     makeBackup();
-    c[0]='\n'; K=I; N=0; // Сбрасываем N
+    c[0]='\n'; K=I; N=0; // Reset N
     nodeLimit = 8;
     est = D(-I,I,Q,O,1, searchDepth);
     nodeLimit = maxNodeLimit;
@@ -130,9 +130,9 @@ void ChessEngine::loop()
 #endif
     applyBackup();
 
-    // Проверка на Шах (+) и Мат (#)
-    if (!(est > -I + 1)) playerMove += "#"; // Мат
-    else if (!isCheck().empty()) playerMove += "+"; // Шах
+    // Check for Check (+) and Mate (#)
+    if (!(est > -I + 1)) playerMove += "#"; // Mate
+    else if (!isCheck().empty()) playerMove += "+"; // Check
 
     unsigned int elapsed = 0;
     if (startThink != -1) elapsed = getCurrentTimeMs() - startThink;
@@ -171,32 +171,32 @@ void ChessEngine::loop()
 
     if(checkGameRule(est)) return;
 
-    if (engineSide == PVP) return; // Если это режим наблюдения/PVP, движок сам не делает ответный ход
+    if (engineSide == PVP) return; // If this is observation/PVP mode, the engine does not make a response move
 
     // ==========================================
-    // ХОД ДВИЖКА
+    // ENGINE MOVE
     // ==========================================
-    makeBackup();  // сохраняем доску перед поиском
+    makeBackup();  // save the board before searching
     startThink = getCurrentTimeMs();
-    c[0]='\n'; // Очищаем буфер, чтобы движок искал лучший ход
+    c[0]='\n'; // Clear the buffer so the engine searches for the best move
     K=I;
-    N=0; // КРИТИЧЕСКИ ВАЖНО: сброс лимита узлов перед поиском!
+    N=0; // CRITICALLY IMPORTANT: reset node limit before searching!
     est = D(-I,I,Q,O,1,searchDepth);
-    isMoveValid(); // Синхронизируем флаг последнего хода
+    isMoveValid(); // Synchronize the last move flag
 
-    // Получаем from, to из cE
+    // Get from, to from cE
     int fromIdxE = cE[0] - 16 * cE[1] + 799;
     int toIdxE   = cE[2] - 16 * cE[3] + 799;
-    // Из сохранённой доски (bBackup) получаем тип фигуры и было ли взятие
+    // From the saved board (bBackup) get the piece type and if it was a capture
     int pieceTypeE = bBackup[fromIdxE] & 7;
     bool isCaptureE = (bBackup[toIdxE] != 0);
     updateEpSquare(cE);
-    // Форматируем ход
+    // Format the move
     std::string engineMove = formatPGNMove(fromIdxE, toIdxE, isCaptureE, pieceTypeE);
-    // Ход легальный – обновляем счётчик 50 ходов
-    updateFiftyMoveClock(pieceType, isCapture);  // ← используем ДО изменения доски
+    // Move is legal - update the 50-move counter
+    updateFiftyMoveClock(pieceType, isCapture);  // ← use BEFORE changing the board
 
-    // Проверка на мат после хода движка
+    // Check for mate after the engine's move
     makeBackup();
     c[0]='\n'; K=I; N=0;
     nodeLimit = 8;
@@ -207,13 +207,13 @@ void ChessEngine::loop()
 #endif
     applyBackup();
 
-    // Проверка на Шах (+) и Мат (#)
-    if (!(est > -I + 1)) engineMove += "#"; // Мат
-    else if (!isCheck().empty()) engineMove += "+"; // Шах
+    // Check for Check (+) and Mate (#)
+    if (!(est > -I + 1)) engineMove += "#"; // Mate
+    else if (!isCheck().empty()) engineMove += "+"; // Check
 
     elapsed = getCurrentTimeMs() - startThink;
     startThink = getCurrentTimeMs();
-    // Вывод хода движка
+    // Output the engine's move
     if (k == WHITE)
     {
         moveNumber++;
@@ -258,7 +258,7 @@ bool ChessEngine::isCastlingMove(const std::string& move, std::string& rockMove)
     if (pieceType != 4) // king?
         return false;
 
-    // Король белых
+    // White king
     if (move == "e1g1")
     {
         rockMove = "h1f1";
@@ -269,7 +269,7 @@ bool ChessEngine::isCastlingMove(const std::string& move, std::string& rockMove)
         rockMove = "a1d1";
         return true;
     }
-    // Король черных
+    // Black king
     if (move == "e8g8")
     {
         rockMove = "h8f8";
@@ -294,7 +294,7 @@ bool ChessEngine::checkMove(const std::string& move)
     int pieceType = pieceFull & 7;
     int pieceColor = pieceFull & 24;
 
-    // Если клетка пуста или пытаемся съесть свою фигуру
+    // If the square is empty or trying to capture own piece
     if (!pieceColor) return false;
     if ((b[t] & 24) == pieceColor) return false;
 
@@ -303,8 +303,8 @@ bool ChessEngine::checkMove(const std::string& move)
     int diff = t - f;
     int dir = (pieceColor == 16) ? 16 : -16;
 
-    // 1. БЫСТРЫЙ ФИЛЬТР ГЕОМЕТРИИ (Без поиска D)
-    if (pieceType < 3) { // пешка
+    // 1. FAST GEOMETRY FILTER (Without search D)
+    if (pieceType < 3) { // pawn
         int startRank = (pieceColor == 16) ? 1 : 6;
 
         if (diff == dir && b[t] == 0) {
@@ -317,8 +317,8 @@ bool ChessEngine::checkMove(const std::string& move)
             if (b[t] != 0) {
                 physicallyPossible = true;
             }
-            else if (t == epSquare) { // взятие на проходе
-                int epPawnIdx = t - dir; // вражеская пешка находится позади
+            else if (t == epSquare) { // en passant capture
+                int epPawnIdx = t - dir; // enemy pawn is behind
                 if (epPawnIdx >= 0 && epPawnIdx < 128 && !(epPawnIdx & 0x88)) {
                     if (b[epPawnIdx] != 0 && (b[epPawnIdx] & 7) < 3 && (b[epPawnIdx] & 24) != pieceColor) {
                         physicallyPossible = true;
@@ -327,7 +327,7 @@ bool ChessEngine::checkMove(const std::string& move)
             }
         }
     }
-    else { // ОСТАЛЬНЫЕ ФИГУРЫ
+    else { // OTHER PIECES
         int j = o[pieceType + 16];
         int r = pieceType;
 
@@ -336,9 +336,9 @@ bool ChessEngine::checkMove(const std::string& move)
             if (!r) break;
 
             if (diff % r == 0 && ((diff > 0 && r > 0) || (diff < 0 && r < 0))) {
-                if (pieceType == 3 || pieceType == 4) { // Конь или Король
+                if (pieceType == 3 || pieceType == 4) { // Knight or King
                     if (diff == r) physicallyPossible = true;
-                    // Проверка рокировки
+                    // Check castling
                     if (pieceType == 4) {
                         if (f == 116) {
                             if (t == 118) physicallyPossible = canCastle(8, true);
@@ -349,7 +349,7 @@ bool ChessEngine::checkMove(const std::string& move)
                         }
                         if (physicallyPossible && std::abs(diff) == 2) isCastling = true;
                     }
-                } else { // Слон, Ладья, Ферзь
+                } else { // Bishop, Rook, Queen
                     int p = f + r;
                     while (p != t && b[p] == 0 && !(p & 0x88)) p += r;
                     if (p == t) physicallyPossible = true;
@@ -359,39 +359,39 @@ bool ChessEngine::checkMove(const std::string& move)
         }
     }
 
-    // Если геометрически ход невозможен - отсекаем сразу
+    // If geometrically impossible, reject immediately
     if (!physicallyPossible && !isCastling) return false;
 
     // ==========================================
-    // 2. БЫСТРАЯ ПРОВЕРКА НА ШАХ (Виртуальный ход)
+    // 2. FAST CHECK FOR CHECK (Virtual move)
     // ==========================================
     char backupT = b[t];
     char backupF = b[f];
 
-    // Делаем виртуальный ход
+    // Make the virtual move
     b[t] = b[f];
     b[f] = 0;
 
     int epCaptureIdx = -1;
     char epBackup = 0;
 
-    // Это и есть то самое временное удаление вражеской пешки при En Passant
+    // This is the temporary removal of the enemy pawn during En Passant
     if (pieceType < 3 && std::abs(diff - dir) == 1 && backupT == 0 && t == epSquare) {
-        epCaptureIdx = t - dir;   // ← возвращаем t - dir
+        epCaptureIdx = t - dir;   // ← restore t - dir
         epBackup = b[epCaptureIdx];
         b[epCaptureIdx] = 0;
     }
 
-    // Проверяем шахи
+    // Check for checks
     int kBackup = k;
     k = 24 - pieceColor;
     bool inCheck = !isCheck().empty();
     k = kBackup;
 
-    // Откат виртуального хода
+    // Revert the virtual move
     b[f] = backupF;
     b[t] = backupT;
-    if (epCaptureIdx != -1) b[epCaptureIdx] = epBackup; // Возвращаем врага на место
+    if (epCaptureIdx != -1) b[epCaptureIdx] = epBackup; // Restore the enemy pawn
 
     return !inCheck;
 }
@@ -446,16 +446,16 @@ int ChessEngine::getWinningSide()
 
 std::string ChessEngine::getKingPosition(int color)
 {
-    // color должен быть либо WHITE (8), либо BLACK (16)
-    for (int i = 0; i < 8; i++) // i - это номер горизонтали (0 для '1', 7 для '8')
+    // color must be either WHITE (8) or BLACK (16)
+    for (int i = 0; i < 8; i++) // i is the rank number (0 for '1', 7 for '8')
     {
-        for (int j = 0; j < 8; j++) // j - это номер вертикали (0 для 'a', 7 для 'h')
+        for (int j = 0; j < 8; j++) // j is the file number (0 for 'a', 7 for 'h')
         {
-            // Формула индексации должна совпадать с getFigure:
+            // The index formula must match getFigure:
             int idx = 16 * (7 - i) + j;
 
-            // (b[idx] & color) проверяет принадлежность стороне
-            // (b[idx] & 7) извлекает тип фигуры. Король — это 4.
+            // (b[idx] & color) checks side ownership
+            // (b[idx] & 7) extracts the piece type. King is 4.
             if ((b[idx] & color) && (b[idx] & 7) == 4)
             {
                 std::string pos = "";
@@ -471,14 +471,14 @@ std::string ChessEngine::getKingPosition(int color)
 std::string ChessEngine::isCheck()
 {
     int kingPos = -1;
-    int side = 24 - k;          // Сторона, которую проверяем (чей сейчас ход)
-    int opponent =  k; // Противник (8 для белых, 16 для черных)
+    int side = 24 - k;          // Side to check (whose move it is now)
+    int opponent =  k; // Opponent (8 for white, 16 for black)
 
-    // 1. Находим позицию короля текущего игрока
+    // 1. Find current player's king position
     for (int i = 0; i < 128; i++)
     {
-        // !(i & 0x88) — проверка, что индекс находится в игровом поле 8x8
-        // (b[i] & 7) == 4 — тип фигуры "Король"
+        // !(i & 0x88) — check that the index is on the 8x8 board
+        // (b[i] & 7) == 4 — piece type "King"
         if (!(i & 0x88) && (b[i] & side) && (b[i] & 7) == 4)
         {
             kingPos = i;
@@ -486,9 +486,9 @@ std::string ChessEngine::isCheck()
         }
     }
 
-    if (kingPos == -1) return ""; // В норме король всегда должен быть на доске
+    if (kingPos == -1) return ""; // Normally the king should always be on the board
 
-    // 2. Ищем фигуру противника, атакующую kingPos
+    // 2. Find an opponent piece attacking kingPos
     for (int i = 0; i < 128; i++)
     {
         if (!(i & 0x88) && (b[i] & opponent))
@@ -497,53 +497,53 @@ std::string ChessEngine::isCheck()
             bool attacks = false;
             int diff = kingPos - i;
 
-            // Логика атаки в зависимости от типа фигуры (согласно вашему массиву o[])
-            if (piece == 3) // Конь (Knight)
+            // Attack logic depending on piece type (according to your o[] array)
+            if (piece == 3) // Knight
             {
                 int ad = std::abs(diff);
                 if (ad == 14 || ad == 18 || ad == 31 || ad == 33) attacks = true;
             }
-            else if (piece == 1 || piece == 2) // Пешка (Pawn)
+            else if (piece == 1 || piece == 2) // Pawn
             {
-                // В вашей индексации Rank 1 имеет индекс 112, Rank 8 — 0.
-                // Белые бьют "вверх" (вычитание из индекса), черные "вниз" (сложение).
-                if (opponent == 8) // Атакует белая пешка
+                // In your indexing, Rank 1 is index 112, Rank 8 is 0.
+                // White captures "up" (subtract from index), black captures "down" (add).
+                if (opponent == 8) // White pawn attacks
                 {
                     if (diff == -15 || diff == -17) attacks = true;
                 }
-                else // Атакует черная пешка
+                else // Black pawn attacks
                 {
                     if (diff == 15 || diff == 17) attacks = true;
                 }
             }
-            else if (piece == 4) // Король (проверка соседних клеток)
+            else if (piece == 4) // King (check adjacent squares)
             {
                 int ad = std::abs(diff);
                 if (ad == 1 || ad == 15 || ad == 16 || ad == 17) attacks = true;
             }
-            else // Скользящие фигуры: 5 (Слон), 6 (Ладья), 7 (Ферзь)
+            else // Sliding pieces: 5 (Bishop), 6 (Rook), 7 (Queen)
             {
                 int dir = 0;
-                if (diff % 16 == 0) dir = (diff > 0 ? 16 : -16); // Вертикаль
-                else if (std::abs(diff) < 8 && (i >> 4 == kingPos >> 4)) dir = (diff > 0 ? 1 : -1); // Горизонталь
-                else if (diff % 15 == 0) dir = (diff > 0 ? 15 : -15); // Диагональ /
-                else if (diff % 17 == 0) dir = (diff > 0 ? 17 : -17); // Диагональ \
+                if (diff % 16 == 0) dir = (diff > 0 ? 16 : -16); // Vertical
+                else if (std::abs(diff) < 8 && (i >> 4 == kingPos >> 4)) dir = (diff > 0 ? 1 : -1); // Horizontal
+                else if (diff % 15 == 0) dir = (diff > 0 ? 15 : -15); // Diagonal /
+                else if (diff % 17 == 0) dir = (diff > 0 ? 17 : -17); // Diagonal \
 
                 if (dir != 0)
                 {
-                    // Проверяем, соответствует ли направление типу фигуры
+                    // Check whether the direction matches the piece type
                     bool canMove = false;
-                    if (piece == 7) canMove = true; // Ферзь — во все стороны
-                    else if (piece == 6 && (std::abs(dir) == 1 || std::abs(dir) == 16)) canMove = true; // Ладья
-                    else if (piece == 5 && (std::abs(dir) == 15 || std::abs(dir) == 17)) canMove = true; // Слон
+                    if (piece == 7) canMove = true; // Queen can move in all directions
+                    else if (piece == 6 && (std::abs(dir) == 1 || std::abs(dir) == 16)) canMove = true; // Rook
+                    else if (piece == 5 && (std::abs(dir) == 15 || std::abs(dir) == 17)) canMove = true; // Bishop
 
                     if (canMove)
                     {
-                        // Проверка преград (blockers) между фигурой и королем
+                        // Check blockers between the piece and the king
                         int p = i + dir;
                         while (p != kingPos)
                         {
-                            if (b[p] & 31) break; // Наткнулись на любую фигуру
+                            if (b[p] & 31) break; // Encountered another piece
                             p += dir;
                         }
                         if (p == kingPos) attacks = true;
@@ -553,7 +553,7 @@ std::string ChessEngine::isCheck()
 
             if (attacks)
             {
-                // Лямбда для перевода индекса (0-127) в строку (например, "e2")
+                // Lambda to convert an index (0-127) to a coordinate string (for example, "e2")
                 auto toCoord = [](int idx) {
                     std::string s = "";
                     s += (char)('a' + (idx & 7));
@@ -564,35 +564,35 @@ std::string ChessEngine::isCheck()
             }
         }
     }
-    return ""; // Шаха нет
+    return ""; // No check
 }
 
 int ChessEngine::getFigureCollor(const std::string& field)
 {
     if (field.size() < 2) return 0;
-    // 1. Быстро переводим координаты в индекс доски
+    // 1. Quickly convert coordinates to a board index
     int j = (field[0] - 'a');
     int i = (field[1] - '1');
     int idx = 16 * (7 - i) + j;
-    // 2. Достаем биты цвета напрямую из памяти (8 или 16)
+    // 2. Extract color bits directly from memory (8 or 16)
     int pieceColor = b[idx] & 24;
-    // 3. Конвертируем внутренний цвет движка в значения вашего enum
-    if (pieceColor == 16) return BLACK; // 8 в движке = черные -> возвращаем ваш BLACK (16)
-    if (pieceColor == 8) return WHITE; // 16 в движке = белые -> возвращаем ваш WHITE (8)
-    return 0; // Клетка пуста
+    // 3. Convert engine internal color to your enum values
+    if (pieceColor == 16) return BLACK; // 8 in the engine = black -> return your BLACK (16)
+    if (pieceColor == 8) return WHITE; // 16 in the engine = white -> return your WHITE (8)
+    return 0; // Empty square
 }
 
 bool ChessEngine::isMoveValid()
 {
-    // проверка связаной фигуры
+    // verify the linked piece
     k ^= 24;
     auto check = isCheck();
     k ^= 24;
 
-    // валидного хода и связаной фигуры проверка связаной фигуры
+    // validate the move and linked piece
     if (k != kLast && check.empty())
     {
-        // ход разрешён
+        // move is allowed
         isLastMoveValid = true;
         kLast = k;
     }
@@ -609,9 +609,9 @@ bool ChessEngine::isMoveValid()
 
 bool ChessEngine::checkGameRule(int estimate)
 {
-    if (!(estimate > -I + 1))  // Очень большое отрицательное значение = мат
+    if (!(estimate > -I + 1))  // Very large negative value = checkmate
     {
-        // Переменная k сейчас указывает на того, кому поставили мат
+        // Variable k now points to the player who was checkmated
         if (k == WHITE)
             pgn->setWhiteWin();
         else
@@ -620,7 +620,7 @@ bool ChessEngine::checkGameRule(int estimate)
         isGame = false;
         return true;
     }
-    if (estimate == 1)      // Пат
+    if (estimate == 1)      // Stalemate
     {
         pgn->setDraw();
         printf("\n%s",pgn->generatePGN().c_str());
@@ -678,12 +678,12 @@ std::string ChessEngine::toCoord(int idx)
     if (idx < 0 || (idx & 0x88))
         return "??";
 
-    int file = idx & 7;      // Младшие 3 бита — это столбец (0=a, 7=h)
-    int rank = idx >> 4;     // Старшие биты — это строка (0=8-я горизонталь, 7=1-я)
+    int file = idx & 7;      // Lower 3 bits are the file (0=a, 7=h)
+    int rank = idx >> 4;     // Upper bits are the rank (0=rank 8, 7=rank 1)
 
     std::string res = "";
-    res += (char)('a' + file);   // Превращаем 0-7 в 'a'-'h'
-    res += (char)('8' - rank);   // Превращаем 0 в '8', а 7 в '1'
+    res += (char)('a' + file);   // Convert 0-7 to 'a'-'h'
+    res += (char)('8' - rank);   // Convert 0 to '8' and 7 to '1'
     return res;
 }
 
@@ -693,27 +693,27 @@ std::string ChessEngine::formatPGNMove(std::string move)
 
     int f = move[0] - 16 * move[1] + 799;
     int t = move[2] - 16 * move[3] + 799;
-    int piece = b[f] & 7;				// Получаем тип фигуры (в MicroMax это b[index] & 7)
+    int piece = b[f] & 7;				// Get piece type (in MicroMax this is b[index] & 7)
 
-    // 1. Проверка на рокировку
-    if (piece == 4) { // Король
+    // 1. Check castling
+    if (piece == 4) { // King
         if (move == "e1g1" || move == "e8g8") return "O-O";
         if (move == "e1c1" || move == "e8c8") return "O-O-O";
     }
 
     std::string pgnM = "";
-    bool isCapture = (b[t] != 0); // Если на целевой клетке что-то есть
+    bool isCapture = (b[t] != 0); // If there is something on the target square
 
-    // Взятие на проходе (пешка ходит по диагонали на пустую клетку)
+    // En passant capture (pawn moves diagonally to an empty square)
     if ((piece == 1 || piece == 2) && (move[0] != move[2]) && b[t] == 0) {
         isCapture = true;
     }
 
-    // 2. Формируем строку взятия
+    // 2. Build capture string
     if (isCapture) {
         pgnM = move.substr(0, 2) + "x" + move.substr(2, 2);
     } else {
-        pgnM = move; // Обычный ход e2e4
+        pgnM = move; // Normal move e2e4
     }
 
     return pgnM;
@@ -726,7 +726,7 @@ std::string ChessEngine::formatPGNMove(int from, int to, bool isCapture, int pie
     int toFile = to & 7;
     int toRank = to >> 4;
 
-    // Рокировка
+    // Castling
     if (pieceType == 4) {
         if (from == 116 && to == 118) return "O-O";
         if (from == 116 && to == 114) return "O-O-O";
@@ -734,15 +734,15 @@ std::string ChessEngine::formatPGNMove(int from, int to, bool isCapture, int pie
         if (from == 4 && to == 2) return "O-O-O";
     }
 
-    // Превращение пешки
+    // Pawn promotion
     if (pieceType < 3 && (toRank == 0 || toRank == 7)) {
         isPromotion = true;
     }
 
-    // Определяем обозначение фигуры
+    // Determine piece notation
     char pieceChar = ' ';
     switch (pieceType) {
-    case 1: case 2: pieceChar = ' '; break; // пешка – без буквы
+    case 1: case 2: pieceChar = ' '; break; // pawn — no letter
     case 3: pieceChar = 'N'; break;
     case 4: pieceChar = 'K'; break;
     case 5: pieceChar = 'B'; break;
@@ -750,28 +750,28 @@ std::string ChessEngine::formatPGNMove(int from, int to, bool isCapture, int pie
     case 7: pieceChar = 'Q'; break;
     }
 
-    // Для фигур (кроме пешек) всегда добавляем начальную клетку в длинной нотации
+    // For pieces (except pawns), always add the starting square in long notation
     if (pieceChar != ' ') {
         pgnMove += pieceChar;
         pgnMove += 'a' + fromFile;
         pgnMove += '1' + (7 - fromRank);
     } else {
-        // Для пешки: при взятии указываем вертикаль
+        // For pawns: specify the file on captures
         if (isCapture) {
             pgnMove += 'a' + fromFile;
         }
     }
 
-    // Взятие
+    // Capture
     if (isCapture) {
         pgnMove += 'x';
     }
 
-    // Клетка назначения
+    // Destination square
     pgnMove += 'a' + toFile;
     pgnMove += '1' + (7 - toRank);
 
-    // Превращение
+    // Promotion
     if (isPromotion) {
         pgnMove += "=Q";
     }
@@ -790,23 +790,23 @@ void ChessEngine::updateFiftyMoveClock(int piece, bool isCapture)
 
 bool ChessEngine::canCastle(int side, bool shortCastle) 
 {
-    // 1. Проверяем, двигался ли король
+    // 1. Check whether the king moved
     int kingIdx = (side == 8) ? 116 : 4; // 116 = e1 (0x74), 4 = e8 (0x04)
-    if (b[kingIdx] & 32) return false; // король уже двигался
+    if (b[kingIdx] & 32) return false; // king already moved
 
-    // 2. Проверяем, двигалась ли ладья
+    // 2. Check whether the rook moved
     int rookIdx;
-    if (side == 8) { // белые
-        rookIdx = shortCastle ? 119 : 112; // h1 (0x77) или a1 (0x70)
-    } else { // чёрные
-        rookIdx = shortCastle ? 7 : 0;     // h8 (0x07) или a8 (0x00)
+    if (side == 8) { // white
+        rookIdx = shortCastle ? 119 : 112; // h1 (0x77) or a1 (0x70)
+    } else { // black
+        rookIdx = shortCastle ? 7 : 0;     // h8 (0x07) or a8 (0x00)
     }
-    if (b[rookIdx] & 32) return false; // ладья уже двигалась
+    if (b[rookIdx] & 32) return false; // rook already moved
 
-    // 3. Проверяем, не находится ли король под шахом сейчас
+    // 3. Check whether the king is currently in check
     if (!isCheck().empty()) return false;
 
-    // 4. Проверяем физическую пустоту полей между фигурами
+    // 4. Check that the squares between pieces are physically empty
     if (side == 8) { // WHITE
         if (shortCastle) {
             // f1(117), g1(118)
@@ -836,9 +836,9 @@ void ChessEngine::updateEpSquare(const std::string& move)
     int to   = move[2] - 16 * move[3] + 799;
     int pieceFull = b[to];
     int pieceType = pieceFull & 7;
-    // Если разница по вертикали равна 2 и это пешка
+    // If the vertical difference is 2 and this is a pawn
     if (abs((to >> 4) - (from >> 4)) == 2 && pieceType < 3) {
-        epSquare = (from + to) / 2;   // клетка между from и to
+        epSquare = (from + to) / 2;   // square between from and to
     } else {
         epSquare = 0;
     }

@@ -162,8 +162,8 @@ class MainListener : public Listener
 		}
 		if (message.find("SEED:") != std::string::npos)
 		{
-		    const char* value = message.c_str() + 5; // пропускаем "SEED:"
-		    // Пробуем распарсить как десятичное число
+		    const char* value = message.c_str() + 5; // skip "SEED:"
+		    // Try to parse as decimal number
 		    int num;
 		    if (sscanf(value, "%d", &num) == 1)
 		    {
@@ -171,7 +171,7 @@ class MainListener : public Listener
 		        printf("Seed set: %d\n", state_.seed);
 		        return;
 		    }
-		    // Иначе считаем хеш строки)
+		    // Otherwise, calculate string hash)
 		    unsigned long hash = 5381;
 		    int c;
 		    while ((c = *value++) != '\0')
@@ -206,8 +206,8 @@ class MainListener : public Listener
 		if (message.find("TIME:") != std::string::npos)
 		{
 		    int date, month, year, hours,  minutes, seconds;
-		    // Ищем начало строки времени после "TIME:"
-		    const char* msg = message.c_str() + 5; // пропускаем "TIME:"
+		    // Looking for the start of the time string after "TIME:"
+		    const char* msg = message.c_str() + 5; // skip "TIME:"
 		    if (sscanf(msg, "%2d.%2d.%2d %2d:%2d:%2d",
 						  &date, &month, &year,
 						  &hours, &minutes ,&seconds) == 6)
@@ -310,7 +310,7 @@ int main(void)
   if (state_.needForceCalibrate)
 	  fieldDriver.setForceCalibrate();
 
-  // Подписки на команды от Bluetooth модуля
+  // Subscribe to commands from Bluetooth module
   bluetooth.attach(&mainListener);
   bluetooth.attach(&led);
   bluetooth.attach(&fieldDriver);

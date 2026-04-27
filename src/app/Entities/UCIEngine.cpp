@@ -63,18 +63,18 @@ void UCIEngine::parseSetOption(const std::string& cmd) {
         value += token;
     }
 
-    // Обработка опций
+    // Process options
     if (name == "Hash") {
-        // Размер хеш-таблицы (можно проигнорировать для STM32)
+        // Hash table size (can ignore for STM32)
         // int hashSize = std::stoi(value);
     }
     else if (name == "Skill Level") {
         int level = std::stoi(value);
-        // Уровень сложности (1-20)
-        searchDepth = 2 + (level * 3) / 20; // маппинг 1-20 -> 2-5
+        // Skill level (1-20)
+        searchDepth = 2 + (level * 3) / 20; // mapping 1-20 -> 2-5
     }
     else if (name == "Threads") {
-        // Количество потоков (игнорируем, у нас 1 поток)
+        // Number of threads (ignored, we have 1 thread)
     }
 }
 
@@ -87,9 +87,9 @@ void UCIEngine::parsePosition(const std::string& cmd) {
 
     ss >> token;
     if (token == "startpos") {
-        // Начальная позиция
+        // Starting position
         currentFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-        ss >> token; // "moves" или конец
+        ss >> token; // "moves" or end
         if (token == "moves") {
             std::string move;
             while (ss >> move) {
@@ -98,7 +98,7 @@ void UCIEngine::parsePosition(const std::string& cmd) {
         }
     }
     else if (token == "fen") {
-        // Парсим FEN (до 6 полей)
+        // Parse FEN (up to 6 fields)
         std::string fen;
         int fieldCount = 0;
         while (ss >> token && fieldCount < 6) {
@@ -106,7 +106,7 @@ void UCIEngine::parsePosition(const std::string& cmd) {
             fen += token;
             fieldCount++;
 
-            // Проверяем, не начались ли ходы
+            // Check whether moves have started
             if (fieldCount == 6 && ss.peek() == ' ') {
                 std::string next;
                 ss >> next;
@@ -116,18 +116,18 @@ void UCIEngine::parsePosition(const std::string& cmd) {
                     }
                     break;
                 } else {
-                    // Это не "moves", значит это часть FEN (возможно, поле номер хода)
-                    // Продолжаем парсить
+                    // This is not "moves", so it may be part of FEN (possibly the move number field)
+                    // Continue parsing
                 }
             }
         }
         currentFEN = fen;
     }
 
-    // Применяем позицию к движку
+    // Apply position to engine
     if (!currentFEN.empty()) {
         // engine->setFEN(currentFEN.c_str());
-        // Применяем все ходы из списка
+        // Apply all moves from the list
         for (const auto& move : currentMoves) {
             engine->setMove(move);
         }
@@ -168,11 +168,11 @@ void UCIEngine::parseGo(const std::string& cmd) {
         }
     }
 
-    // Останавливаем предыдущий поиск
+    // Stop the previous search
     stop();
     if (searchThread.joinable()) searchThread.join();
 
-    // Запускаем новый поиск
+    // Start a new search
     stopSearch = false;
     searching = true;
 
@@ -182,50 +182,50 @@ void UCIEngine::parseGo(const std::string& cmd) {
 }
 
 void UCIEngine::searchAndOutput() {
-    // Определяем ограничение по времени
+    // Determine the time limit
     auto startTime = std::chrono::steady_clock::now();
     int timeLimit = 0;
 
     if (searchMovetime > 0) {
         timeLimit = searchMovetime;
     } else if (searchWTime > 0 || searchBTime > 0) {
-        // Определяем, чей ход
+        // Determine whose move it is
         bool whiteToMove = (currentFEN.find(" w ") != std::string::npos);
         int myTime = whiteToMove ? searchWTime : searchBTime;
         int myInc = whiteToMove ? searchWInc : searchBInc;
 
-        // Вычисляем время на ход (примерная формула)
+        // Calculate time per move (approximate formula)
         int movesLeft = searchMovesToGo > 0 ? searchMovesToGo : 40;
         timeLimit = myTime / movesLeft + myInc / 2;
-        if (timeLimit < 100) timeLimit = 100; // минимум 0.1 секунды
-        if (timeLimit > 5000) timeLimit = 5000; // максимум 5 секунд
+        if (timeLimit < 100) timeLimit = 100; // minimum 0.1 seconds
+        if (timeLimit > 5000) timeLimit = 5000; // maximum 5 seconds
     }
 
-    // Адаптируем глубину под время
+    // Adapt depth to the time
     int maxDepth = searchDepth;
     if (timeLimit > 0) {
-        // Приблизительная эвристика: 100 мс на глубину
+        // Rough heuristic: 100 ms per depth
         maxDepth = std::min(searchDepth, (int)(timeLimit / 100) + 2);
         if (maxDepth < 2) maxDepth = 2;
-        if (maxDepth > 6) maxDepth = 6; // ограничение для STM32
+        if (maxDepth > 6) maxDepth = 6; // limit for STM32
     }
 
     // engine->setDepth(maxDepth);
 
-    // Получаем лучший ход
+    // Get the best move
     std::string bestMove = engine->getHelp();
 
-    // Если нужно, получаем оценку позиции
+    // If needed, get the position evaluation
     // int evaluation = engine->getEvaluation();
 
-    // Вычисляем затраченное время
+    // Calculate elapsed time
     auto endTime = std::chrono::steady_clock::now();
     int elapsedMs = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
 
-    // Отправляем информацию (опционально)
+    // Send info (optional)
     // sendInfo(maxDepth, evaluation, bestMove, 0, elapsedMs);
 
-    // Отправляем результат
+    // Send the result
     sendBestMove(bestMove);
 
     searching = false;
@@ -243,7 +243,7 @@ void UCIEngine::stop() {
 void UCIEngine::loop() {
     std::string line;
 
-    // UCI идентификация
+    // UCI identification
     std::cout << "id name ST-Mate 1.0" << std::endl;
     std::cout << "id author Zaharov (based on micro-Max by H.G. Muller)" << std::endl;
     std::cout << "option name Hash type spin default 1 min 1 max 16" << std::endl;
@@ -255,7 +255,7 @@ void UCIEngine::loop() {
 
         std::ofstream log("logfile.txt", std::ios_base::app | std::ios_base::out);
         log << line.c_str() << std::endl;
-        // Удаляем пробелы в конце
+        // Trim trailing spaces
         line.erase(line.find_last_not_of(" \n\r\t") + 1);
 
         if (line.empty()) continue;
@@ -270,7 +270,7 @@ void UCIEngine::loop() {
             sendReady();
         }
         else if (line == "ucinewgame") {
-            // Начинаем новую игру
+            // Start a new game
             delete engine;
             engine = new ChessEngine(PVP, 0, searchDepth);
             // engine->setFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");

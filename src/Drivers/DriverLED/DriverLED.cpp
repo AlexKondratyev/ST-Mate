@@ -81,9 +81,9 @@ void DriverLED::animationPowerOn()
             for(col = 0; col < 8; col++) {
                 ledIndex = row * 8 + (7 - col);
                 if((row + col) % 2 == 0) {
-                    setPixel(ledIndex, i/3, i/3, i/3); // Затухающие черные
+                    setPixel(ledIndex, i/3, i/3, i/3); // Fading blacks
                 } else {
-                    setPixel(ledIndex, maxBrightness, maxBrightness, maxBrightness); // Белые
+                    setPixel(ledIndex, maxBrightness, maxBrightness, maxBrightness); // Whites
                 }
             }
         }

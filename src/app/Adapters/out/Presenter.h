@@ -16,19 +16,19 @@
 
 struct ChessTheme {
     struct Color { uint8_t r, g, b; };
-    Color initPosCorrect{0,255,0};	// Цвет начальной позиции правильно (Зелйный)
-    Color initPosFalse{255,0,0};	// Цвет начальной позиции не верно (красный)
-    Color avalibleMove{128,128,128};   // Доступный ход (Тускло белый)
-    Color moveAttack{255,0,0};    	// Клетка для взятия (Красный)
-    Color lastMove{128,128,0};      	// Последний ход (Желтый)
-    Color help{0,128,255};          	// Подсказка (Голубой)
-    Color activePiece{255,255,255};   	// Фигура в руке (Белый)
-    Color error{255,0,0};         	// Ошибка (Красный)
-    Color checkKing{255,0,0};       // Шах короля (Красный)
-    Color checkAttack{0,0,255};     // Шах Атакующий (Синий)
-    Color mateKingWin{0,255,0};     // Мат Короля победившего (Красный)
-    Color mateKingLose{255,0,0};    // Мат Короля пороигравшего (Зелёный)
-    Color stalemate{0,255,255};		// Пат (Голубой)
+    Color initPosCorrect{0,255,0};	// Initial position correct (Green)
+    Color initPosFalse{255,0,0};	// Initial position incorrect (Red)
+    Color availableMove{128,128,128};   // Available move (Dim white)
+    Color moveAttack{255,0,0};    	// Square for capture (Red)
+    Color lastMove{128,128,0};      	// Last move (Yellow)
+    Color help{0,128,255};          	// Hint (Light Blue)
+    Color activePiece{255,255,255};   	// Piece in hand (White)
+    Color error{255,0,0};         	// Error (Red)
+    Color checkKing{255,0,0};       // King in check (Red)
+    Color checkAttack{0,0,255};     // Check attacker (Blue)
+    Color mateKingWin{255,0,0};     // Winning king in checkmate (Red)
+    Color mateKingLose{0,255,0};    // King in checkmate (losing side) (Green)
+    Color stalemate{0,255,255};		// Stalemate (Cyan) / Draw (Light Blue)
 };
 
 class Presenter : public OutputBoundary , public Listener
@@ -46,8 +46,8 @@ private:
     MoveTurn move = WHITE_TURN;
     GameMode mode;
 
-    // Внутренние состояния для анимаций
-    uint32_t tick = 0; // Счетчик кадров для анимации
+    // Internal states for animations
+    uint32_t tick = 0; // Frame counter for animation
 
     int activeFigureIdx = -1;
     int helpFromIdx = -1, helpToIdx = -1;
@@ -59,12 +59,12 @@ private:
     int winningSide = 0;
     int posWhiteKing = -1, posBlackKing = -1;
 
-    // Массивы для доступных ходов (64 клетки)
+    // Arrays for available moves (64 squares)
     bool availableNormalMoves[64] = {false};
     bool availableAttackMoves[64] = {false};
 
     void loadTheme(int themeId); // 0 - Classic
-    // Вспомогательная функция генерации волны для пульсации
+    // Auxiliary function for wave generation for pulsation
     uint8_t getWave(uint32_t period, uint8_t max_val);
 
 public:

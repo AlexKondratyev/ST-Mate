@@ -38,7 +38,7 @@ private:
 
     int moveNumber = 0;
     int fiftyMoveClock = 0;
-    int epSquare = 0;      // клетка для взятия на проходе
+    int epSquare = 0;      // square for en passant capture
 
     unsigned int startThink = -1;
     float whiteThinkTime = 0;

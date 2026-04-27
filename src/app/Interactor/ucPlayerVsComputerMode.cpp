@@ -9,7 +9,7 @@
 #include "../Entities/Converter.h"
 #include <memory.h>
 
-// вызывается только при перемещении фигуры
+// called only when moving a figure
 void Interactor::figureMovePvsC(const std::string& position, int index, bool isSet)
 {
     if (e == nullptr) return;
@@ -17,7 +17,7 @@ void Interactor::figureMovePvsC(const std::string& position, int index, bool isS
     int playerSide = mode == PLAYER_WHITE ? WHITE : BLACK;
 
     // ==========================================================
-    // 1. ОБРАБОТКА ХОДА ДВИЖКА (Физический перенос его фигуры)
+    // 1. ENGINE MOVE PROCESSING (Physical transfer of its figure)
     // ==========================================================
     if (!eMove.empty())
     {
@@ -49,7 +49,7 @@ void Interactor::figureMovePvsC(const std::string& position, int index, bool isS
             {
                 output->setLastMove(Converter::convert(eMove.substr(0,2)), index);
 
-                // Проверяем рокировку
+                // Check castling
                 if (e->isCastlingMove(eMove, rockMovebyCasteling))
                 {
     				castelingInProgress = true;
@@ -67,7 +67,7 @@ void Interactor::figureMovePvsC(const std::string& position, int index, bool isS
                 inHand.clear();
                 eMove.clear();
 
-                // !!! ВАЖНО: Проверяем мат ТОЛЬКО ПОСЛЕ ТОГО, как фигура физически поставлена
+                // !!! IMPORTANT: Check mate ONLY AFTER the figure is physically placed
                 checkActiveGame();
 
                 sideTurn = (playerSide == WHITE) ? WHITE_TURN : BLACK_TURN;
@@ -81,19 +81,19 @@ void Interactor::figureMovePvsC(const std::string& position, int index, bool isS
     }
 
     // ==========================================================
-    // 2. ОБРАБОТКА ХОДА ИГРОКА
+    // 2. PLAYER MOVE PROCESSING
     // ==========================================================
 
     if (isSet && inHand == position) {
         inHand.clear();
         output->clearAllHighlights();
-        // Восстановление шаха
+        // Restoring check
         std::string check = e->isCheck();
         if (!check.empty()) output->setCheck(Converter::convert(check.substr(0,2)), Converter::convert(check.substr(2,2)));
         return;
     }
 
-    // взяли в руку фигуру
+    // picked up a figure
     if (!isSet && inHand.empty())
     {
     	if (castelingInProgress) {inHand = position; return;}
@@ -106,7 +106,7 @@ void Interactor::figureMovePvsC(const std::string& position, int index, bool isS
         }
     }
 
-    // сделали ход
+    // made a move
     if (isSet && !inHand.empty())
     {
 		if (castelingInProgress && rockMovebyCasteling.substr(2, 2)==position)
@@ -132,7 +132,7 @@ void Interactor::figureMovePvsC(const std::string& position, int index, bool isS
 				output->addAvailableMove(Converter::convert(to));
 			}
 
-            // Проверка рокировки игрока
+            // Player castling check
             if (e->isCastlingMove(move, rockMovebyCasteling)) {
                 castelingInProgress = true;
                 output->setHelpMove(Converter::convert(rockMovebyCasteling.substr(0, 2)),
@@ -141,14 +141,14 @@ void Interactor::figureMovePvsC(const std::string& position, int index, bool isS
                 return;
             }
 
-            // Проверяем, не поставил ли ИГРОК мат движку
+            // Check if PLAYER put the engine in mate
             if (e->getCurrentSide() != playerSide)
             {
             	checkActiveGame();
             }
-            // Если игра продолжается, запрашиваем ход у движка
+            // If the game continues, request move from engine
             eMove = e->getMove();
-            if (!eMove.empty()) { // Подсвечиваем ход движка, чтобы игрок видел его ДО анимации конца игры
+            if (!eMove.empty()) { // Highlight the engine's move so the player sees it BEFORE the end game animation
 					std::string from = eMove.substr(0, 2);
 					std::string to = eMove.substr(2, 2);
 					output->setActiveFigure(Converter::convert(from));
@@ -162,7 +162,7 @@ void Interactor::figureMovePvsC(const std::string& position, int index, bool isS
     }
 }
 
-// вызывается всегда переодически
+// called always periodically
 void Interactor::runPvsC()
 {
 	switch (gameState) {

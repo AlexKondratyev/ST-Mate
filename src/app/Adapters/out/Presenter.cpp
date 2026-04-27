@@ -22,7 +22,7 @@ Presenter::~Presenter()
 
 }
 
-// Быстрая целочисленная генерация пульсаций от 0 до max_val
+// Fast integer generation of pulses from 0 to max_val
 uint8_t Presenter::getWave(uint32_t period, uint8_t max_val)
 {
     uint32_t t = tick % period;
@@ -35,23 +35,23 @@ void Presenter::run()
 {
     if (fields == nullptr || highlight == nullptr) return;
 
-    tick++; // Увеличиваем счетчик кадров
+    tick++;
 
-    // Генерируем анимационные пульсации
-    uint8_t pulseSlow = getWave(200, 255); // Плавное мигание (период 200 тиков)
-    uint8_t pulseFast = getWave(64, 255);  // Быстрое мигание (период 64 тика)
+    // Generate animation pulses
+    uint8_t pulseSlow = getWave(200, 255); // Smooth blinking (period 200 ticks)
+    uint8_t pulseFast = getWave(64, 255);  // Fast blinking (period 64 ticks)
 
     for (int i = 0; i < 64; i++)
     {
-        uint8_t r = 0, g = 0, b = 0; // Базовый цвет (черный)
+        uint8_t r = 0, g = 0, b = 0; // Base color (black)
 
         switch (gameState) {
 			// ==========================================
-			// РЕЖИМ 1: РАССТАНОВКА ФИГУР (NO_POSITION)
+			// MODE 1: PIECE PLACEMENT (NO_POSITION)
 			// ==========================================
 			case NO_POSITION:
 			{
-	            // Плавно переливаем стартовые позиции
+	            // Smoothly transition starting positions
 	            if (i < 16) {
 	                if (fields->getField(i) == Fields::white) {
 						r = theme.initPosCorrect.r;
@@ -63,7 +63,7 @@ void Presenter::run()
 						b = (theme.initPosFalse.b * pulseSlow) / 255;
 	                }
 	            }
-	            // На центре не должно быть фигур
+	            // There should be no pieces in the center
 	            else if (i > 15 && i < 48) {
 	                if (fields->getField(i) != Fields::none) {
 						r = (theme.initPosFalse.r * pulseSlow) / 255;
@@ -83,7 +83,7 @@ void Presenter::run()
 						b = (theme.initPosFalse.b * pulseSlow) / 255;
 	                }
 	            }
-	            // Eсли игра сбросилась сбрасываем состояния
+	            // If the game is reset, reset states
 	            activeFigureIdx = -1;
 	            helpFromIdx = -1; helpToIdx = -1;
 	            lastFromIdx = -1; lastToIdx = -1;
@@ -91,25 +91,25 @@ void Presenter::run()
 				break;
 			}
 			// ==========================================
-			// РЕЖИМ 2: ИГРА (GAME)
+			// MODE 2: GAME
 			// ==========================================
 			case GAME:
 			{
 
-				// СЛОЙ 1: Последний ход и Ход-подсказка (самый низкий приоритет)
-				if (i == lastFromIdx || i == lastToIdx) {// Последний ход
+				// LAYER 1: Last move and Hint move (lowest priority)
+				if (i == lastFromIdx || i == lastToIdx) {// Last move
 					r = theme.lastMove.r;
 					g = theme.lastMove.g;
 					b = theme.lastMove.b;
 				}
 
-				if (i == helpFromIdx || i == helpToIdx) { // Ход-подсказка
+				if (i == helpFromIdx || i == helpToIdx) { // Hint move
 					r = (theme.help.r * pulseSlow) / 255;
 					g = (theme.help.g * pulseSlow) / 255;
 					b = (theme.help.b * pulseSlow) / 255;
 				}
 
-				// СЛОЙ 4: Невадидный ход
+				// LAYER 4: Invalid move
 				if (i == lastInvalidFromIdx  || i == lastInvalidToIdx) {
 
 					r = (theme.error.r * pulseFast) / 255;
@@ -117,32 +117,32 @@ void Presenter::run()
 					b = (theme.error.b * pulseFast) / 255;
 				}
 
-				// СЛОЙ 5: ШАХ! (Наивысший приоритет)
+				// LAYER 5: CHECK! (Highest priority)
 				if (checkKingIdx != -1)  {
-					if (i == checkKingIdx) {	// Король
+					if (i == checkKingIdx) {	// King
 						r = (theme.checkKing.r * pulseFast) / 255;
 						g = (theme.checkKing.g * pulseFast) / 255;
 						b = (theme.checkKing.b * pulseFast) / 255;
 					}
-					if (i == checkAttackerIdx) { // Атакующий
+					if (i == checkAttackerIdx) { // Attacker
 						r = (theme.checkAttack.r * pulseFast) / 255;
 						g = (theme.checkAttack.g * pulseFast) / 255;
 						b = (theme.checkAttack.b * pulseFast) / 255;
 					}
 				}
-				// СЛОЙ 2: Доступные ходы
+				// LAYER 2: Available moves
 				if (availableNormalMoves[i]) {
 					r = theme.avalibleMove.r;
 					g = theme.avalibleMove.g;
 					b = theme.avalibleMove.b;
 				}
-				if (availableAttackMoves[i]) { // Клетка для взятия
+				if (availableAttackMoves[i]) { // Cell for capture
 					r = (theme.moveAttack.r * pulseSlow) / 255;
 					g = (theme.moveAttack.g * pulseSlow) / 255;
 					b = (theme.moveAttack.b * pulseSlow) / 255;
 				}
 
-				// СЛОЙ 3: Активная фигура (которую подняли)
+				// LAYER 3: Active piece (the one picked up)
 				if (i == activeFigureIdx) {
 					r = (theme.activePiece.r * pulseSlow) / 255;
 					g = (theme.activePiece.g * pulseSlow) / 255;
@@ -152,13 +152,13 @@ void Presenter::run()
 				break;
 			}
 			// ==========================================
-			// РЕЖИМ 3: КОНЕЦ ИГРЫ (GAME_OVER)
+			// MODE 3: GAME OVER
 			// ==========================================
 			case GAME_OVER:
 			{
 	            if (winningSide == 8 || winningSide == 16)
 	            {
-	                // МАТ // Победитель и проигравший пульсируют
+	                // CHECKMATE // Winner and loser pulse
 	            	if (winningSide == 8)
 	            	{
 	            		if (i == posWhiteKing) {
@@ -188,7 +188,7 @@ void Presenter::run()
 	            }
 	            else
 	            {
-	                // ПАТ (Stalemate) - Оба короля плавно мигают
+	                // STALEMATE - Both kings blink smoothly
 	                if (i == posWhiteKing || i == posBlackKing) {
 						r = (theme.stalemate.r * pulseSlow) / 255;
 						g = (theme.stalemate.g * pulseSlow) / 255;
@@ -200,7 +200,7 @@ void Presenter::run()
 			default:
 				break;
 		}
-        // Отправляем вычисленный цвет на ленту
+        // Send the calculated color to the strip
         highlight->setFieldHighlight(i, r, g, b);
     }
 }
@@ -224,7 +224,7 @@ void Presenter::messege(const std::string &message)
 }
 
 // ==========================================
-// СЕТТЕРЫ СОСТОЯНИЙ (Связь с Interactor)
+// STATE SETTERS (Connection with Interactor)
 // ==========================================
 
 void Presenter::setFields(Fields &fields) { this->fields = &fields; }
@@ -250,13 +250,13 @@ void Presenter::setLastMove(int from, int to)
 	lastInvalidFromIdx = -1;
 	lastInvalidToIdx = -1;
 
-    clearAllHighlights(); // Сбрасываем выделение активной фигуры при новом ходе
+    clearAllHighlights(); // Reset highlights when a new move is made
 }
 
 void Presenter::setInvalidLastMove(int from, int to)
 {
-    clearAllHighlights(); // Сбрасываем выделение активной фигуры при новом ходе
-	if (lastInvalidFromIdx == to && lastInvalidToIdx == from) // поставили на место
+    clearAllHighlights(); // Reset highlights when a new move is made
+	if (lastInvalidFromIdx == to && lastInvalidToIdx == from)
 	{
 		lastInvalidToIdx=-1;
 		lastInvalidFromIdx=-1;
@@ -307,7 +307,7 @@ void Presenter::setCheckmate(int winningSide, int whiteKingPos, int blackKingPos
 
 void Presenter::setStalemate(int whiteKingPos, int blackKingPos)
 {
-    this->winningSide = 0; // 0 = Ничья
+    this->winningSide = 0; // 0 = Draw
     this->posWhiteKing = whiteKingPos;
     this->posBlackKing = blackKingPos;
     setMode(GAME_OVER);

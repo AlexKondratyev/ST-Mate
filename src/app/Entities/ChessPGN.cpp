@@ -56,32 +56,32 @@ std::string ChessPGN::formatMoves() {
     int moveNumber = 1;
 //    int commentIndex = 0;
     for (size_t i = 0; i < moves.size(); i++) {
-        // Добавляем номер хода для белых (нечетные ходы)
+        // Add move number for white (odd moves)
         if (i % 2 == 0) {
             char str[8];
             sprintf(str, "%d. ", moveNumber++);
             ss.append(str);
         }
         ss.append(moves[i]);
-        // Добавляем комментарии, если есть
+        // Add comments if any
 //        while (commentIndex < comments.size()) {
 //            ss.append(" ").append(comments[commentIndex]);
 //            commentIndex++;
 //        }
         ss.append(" ");
-        // Добавляем перевод строки каждые 10 ходов для читаемости
+        // Add line break every 10 moves for readability
         if (i % 10 == 9) {
             ss.append("\n");
         }
     }
-    // Добавляем результат в конец
+    // Add result at the end
     ss.append(resultToString(gameResult));
     return ss;
 }
 
 std::string ChessPGN::generatePGN() {
     std::string pgn;
-    // Обязательные теги
+    // Required tags
     pgn.append(formatTag("Event", event));
     pgn.append(formatTag("Site", site));
     pgn.append(formatTag("Date", date));
@@ -92,7 +92,7 @@ std::string ChessPGN::generatePGN() {
     if (!fen.empty())
         pgn.append(formatTag("FEN", fen));
     pgn.append("\n");
-    // Ходы игры
+    // Game moves
     pgn.append(formatMoves());
     pgn.append("\n\n");
     return pgn;

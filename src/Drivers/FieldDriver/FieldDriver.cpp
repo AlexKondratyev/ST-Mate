@@ -20,7 +20,7 @@
 #pragma pack(push, 1)
 struct FieldsSettings {
 	uint16_t TRIGGER_LEVEL = 25;
-	float alpha = 0.125f;  // Коэффициент (чем меньше, тем сильнее сглаживание)
+	float alpha = 0.125f;  // Coefficient (the smaller, the stronger the smoothing)
 	int32_t calibration_value[COUNT_ROW*COUNT_ROW] = {
 		2062, 1972, 2033, 1975, 1972, 1993, 2005, 2013,
 		2013, 1952, 1950, 1971, 2000, 1993, 1931, 2063,
@@ -35,7 +35,7 @@ struct FieldsSettings {
 #pragma pack(pop)
 
 uint16_t value[COUNT_ROW*COUNT_ROW] = {0};
-uint16_t filtered_values[COUNT_ROW*COUNT_ROW] = {0}; // Храним текущее среднее
+uint16_t filtered_values[COUNT_ROW*COUNT_ROW] = {0}; // Store current average
 uint8_t selector = 0;
 uint16_t adcValue[CHANNEL_NUM+1] = {0};
 uint16_t vRef = 0;
@@ -166,27 +166,27 @@ void FieldDriver::run()
 
 	for (int i = 0; i < 64; i++)
 	{
-		// 1. Применяем фильтр
-		filtered_values[i] = (fieldsSetting.alpha * (float)value[i]) + ((1.0f - fieldsSetting.alpha) * filtered_values[i]);
+// 1. Apply filter
+    filtered_values[i] = (fieldsSetting.alpha * (float)value[i]) + ((1.0f - fieldsSetting.alpha) * filtered_values[i]);
 
-	    int32_t diff = (int32_t)filtered_values[i] - fieldsSetting.calibration_value[i];
-	    Fields::FieldState currentState = fields->getField(i);
+        int32_t diff = (int32_t)filtered_values[i] - fieldsSetting.calibration_value[i];
+        Fields::FieldState currentState = fields->getField(i);
 
-	    // Пороги (можно вынести в константы)
-	    int32_t threshold_set = fieldsSetting.TRIGGER_LEVEL;       // 25: порог появления фигуры
-	    int32_t threshold_release = fieldsSetting.TRIGGER_LEVEL - 10; // 15: порог исчезновения
+        // Thresholds (could be moved to constants)
+        int32_t threshold_set = fieldsSetting.TRIGGER_LEVEL;       // 25: threshold for piece appearance
+        int32_t threshold_release = fieldsSetting.TRIGGER_LEVEL - 10; // 15: threshold for disappearance
 
 	    if (currentState == Fields::none) {
-	        // Если было пусто, ждем уверенного сигнала (> 25)
+	        // If it was empty, wait for a strong signal (> 25)
 	        if (abs(diff) > threshold_set) {
 	            fields->setField(i, (diff > 0) ? Fields::white : Fields::black);
 	        }
 	    } else {
-	        // Если фигура уже стоит, отпускаем только если сигнал сильно упал (< 15)
+	        // If a piece is already present, clear only if signal drops strongly (< 15)
 	        if (abs(diff) < threshold_release) {
 	            fields->setField(i, Fields::none);
 	        } else {
-	            // Защита от смены полярности на лету (например, провели другим магнитом)
+	            // Protection against polarity changes on the fly (for example, another magnet passing over)
 	            fields->setField(i, (diff > 0) ? Fields::white : Fields::black);
 	        }
 	    }

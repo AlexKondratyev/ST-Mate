@@ -6,116 +6,116 @@
 #include "FlashDriverInterface.h"
 
 /**
- * @brief Драйвер для SPI NOR Flash N25Q032 (32 Mbit).
+ * @brief Driver for SPI NOR Flash N25Q032 (32 Mbit).
  */
 class FlashDriver : public FlashDriverInterface
 {
 public:
     /**
-     * @brief Конструктор.
-     * @param spi Указатель на инициализированный SPI_HandleTypeDef.
-     * @param csPort Порт для вывода CS.
-     * @param csPin Пин для вывода CS.
+     * @brief Constructor.
+     * @param spi Pointer to initialized SPI_HandleTypeDef.
+     * @param csPort Port for CS output.
+     * @param csPin Pin for CS output.
      */
     FlashDriver(SPI_HandleTypeDef* spi, GPIO_TypeDef* csPort, uint16_t csPin);
     ~FlashDriver();
 
     /**
-     * @brief Инициализирована ли память.
-     * @return true если успешно, false в противном случае.
+     * @brief Is memory initialized.
+     * @return true if successful, false otherwise.
      */
     bool isInit() override;
 
 private:
 
     /**
-     * @brief Чтение данных из флеш-памяти.
-     * @param addr Начальный адрес чтения.
-     * @param data Буфер для приёма данных.
-     * @param len Количество байт для чтения.
-     * @return true если успешно, false в противном случае.
+     * @brief Reading data from flash memory.
+     * @param addr Starting read address.
+     * @param data Buffer for receiving data.
+     * @param len Number of bytes to read.
+     * @return true if successful, false otherwise.
      */
     bool read(uint32_t addr, uint8_t* data, uint32_t len) override;
 
     /**
-     * @brief Запись данных произвольного размера (стирает затронутые сектора).
-     * @param addr Начальный адрес записи.
-     * @param data Буфер данных.
-     * @param len Количество байт для записи.
-     * @return true если успешно, false в противном случае.
+     * @brief Writing data of arbitrary size (erases affected sectors).
+     * @param addr Starting write address.
+     * @param data Data buffer.
+     * @param len Number of bytes to write.
+     * @return true if successful, false otherwise.
      */
     bool write(uint32_t addr, const uint8_t* data, uint32_t len) override;
 
     /**
-     * @brief Запись страницы (256 байт). Адрес должен быть кратен 256.
-     * @param pageAddr Адрес страницы (выровненный на 256 байт).
-     * @param data Данные для записи.
-     * @param len Количество байт (не более 256).
-     * @return true если успешно, false в противном случае.
+     * @brief Writing page (256 bytes). Address must be multiple of 256.
+     * @param pageAddr Page address (aligned to 256 bytes).
+     * @param data Data to write.
+     * @param len Number of bytes (no more than 256).
+     * @return true if successful, false otherwise.
      */
     bool writePage(uint32_t pageAddr, const uint8_t* data, uint32_t len);
 
     /**
-     * @brief Стирание диапазона (по секторам 4 КБ).
-     * @param startAddr Начальный адрес.
-     * @param endAddr Конечный адрес (включительно).
-     * @return true если успешно, false в противном случае.
+     * @brief Erasing range (by 4 KB sectors).
+     * @param startAddr Starting address.
+     * @param endAddr End address (inclusive).
+     * @return true if successful, false otherwise.
      */
     bool eraseRange(uint32_t startAddr, uint32_t endAddr);
 
-    uint32_t id = 0;					// id памяти
-    SPI_HandleTypeDef* spi_;   ///< Указатель на SPI периферию.
-    GPIO_TypeDef* csPort_;     ///< Порт для CS.
-    uint16_t csPin_;           ///< Пин для CS.
-    static const uint32_t PAGE_SIZE  = 256;   ///< Размер страницы.
-    static const uint32_t SECTOR_SIZE = 4096; ///< Размер сектора.
+    uint32_t id = 0;					// memory id
+    SPI_HandleTypeDef* spi_;   ///< Pointer to SPI peripheral.
+    GPIO_TypeDef* csPort_;     ///< Port for CS.
+    uint16_t csPin_;           ///< Pin for CS.
+    static const uint32_t PAGE_SIZE  = 256;   ///< Page size.
+    static const uint32_t SECTOR_SIZE = 4096; ///< Sector size.
     static const uint32_t CHIP_SIZE   = 4 * 1024 * 1024; ///< 32 Mbit = 4 MB.
 
     /**
-     * @brief Инициализация драйвера.
-     * @return true если успешно, false в противном случае.
+     * @brief Driver initialization.
+     * @return true if successful, false otherwise.
      */
     bool init();
 
     /**
-     * @brief Чтение идентификатора чипа (3 байта).
-     * @return 24-битный идентификатор (manufacturer, memory type, capacity).
+     * @brief Reading chip identifier (3 bytes).
+     * @return 24-bit identifier (manufacturer, memory type, capacity).
      */
     uint32_t readID();
 
     /**
-     * @brief Стирание сектора (4 КБ). Адрес должен быть кратен 4096.
-     * @param sectorAddr Адрес сектора.
-     * @return true если успешно, false в противном случае.
+     * @brief Erasing sector (4 KB). Address must be multiple of 4096.
+     * @param sectorAddr Sector address.
+     * @return true if successful, false otherwise.
      */
     bool eraseSector(uint32_t sectorAddr);
 
     /**
-     * @brief Стирание блока (64 КБ). Адрес должен быть кратен 65536.
-     * @param blockAddr Адрес блока.
-     * @return true если успешно, false в противном случае.
+     * @brief Erasing block (64 KB). Address must be multiple of 65536.
+     * @param blockAddr Block address.
+     * @return true if successful, false otherwise.
      */
     bool eraseBlock(uint32_t blockAddr);
 
     /**
-     * @brief Стирание сектора по любому адресу (автоматическое выравнивание).
-     * @param addr Любой адрес внутри сектора.
-     * @return true если успешно.
+     * @brief Erase a sector at any address (automatic alignment).
+     * @param addr Any address inside the sector.
+     * @return true if successful.
      */
     bool eraseSectorContaining(uint32_t addr);
 
     /**
-     * @brief Стирание всего чипа.
-     * @return true если успешно, false в противном случае.
+     * @brief Erase the entire chip.
+     * @return true if successful, false otherwise.
      */
     bool eraseChip();
 
-    void csLow();              ///< Установка CS в 0.
-    void csHigh();             ///< Установка CS в 1.
-    void waitForReady();       ///< Ожидание готовности чипа (сброс WIP).
-    bool writeEnable();        ///< Разрешение записи.
-    bool writeDisable();       ///< Запрет записи.
-    uint8_t readStatusRegister(); ///< Чтение регистра состояния.
+    void csLow();              ///< Set CS to 0.
+    void csHigh();             ///< Set CS to 1.
+    void waitForReady();       ///< Wait for chip ready (WIP reset).
+    bool writeEnable();        ///< Enable writing.
+    bool writeDisable();       ///< Disable writing.
+    uint8_t readStatusRegister(); ///< Read status register.
 };
 
 #endif // N25Q032_H

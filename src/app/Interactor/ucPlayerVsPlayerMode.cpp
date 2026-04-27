@@ -12,12 +12,12 @@ void Interactor::figureMovePvsP(const std::string& position, int index, bool isS
 {
 	if (e == nullptr) return;
 
-	// поставили фигуру обратно
+	// put the figure back
 	if (isSet && inHand == position)
 	{
 		inHand.clear();
 		output->clearAllHighlights();
-		// --- ДОБАВЛЯЕМ ВОССТАНОВЛЕНИЕ ПОДСВЕТКИ ШАХА ---
+		// --- ADD CHECK HIGHLIGHT RESTORATION ---
 		std::string check = e->isCheck();
 		if (!check.empty())
 			output->setCheck(Converter::convert(check.substr(0,2)),
@@ -25,7 +25,7 @@ void Interactor::figureMovePvsP(const std::string& position, int index, bool isS
 		return;
 	}
 
-	// взяли в руку фигуру
+	// picked up a figure
 	if (!isSet && inHand.empty())
 	{
 		if (castelingInProgress) {inHand = position; return;}
@@ -39,7 +39,7 @@ void Interactor::figureMovePvsP(const std::string& position, int index, bool isS
 			output->setInvalidLastMove(index, -1);
 	}
 
-	// сделали ход
+	// made a move
 	if (isSet && !inHand.empty())
 	{
 		if (castelingInProgress && rockMovebyCasteling.substr(2, 2)==position)

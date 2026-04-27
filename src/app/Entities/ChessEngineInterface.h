@@ -20,14 +20,14 @@ public:
     virtual void setFEN(const std::string& fen) = 0;
     virtual const std::string getFEN() = 0;
     virtual const std::string getPGN() = 0;
-    virtual bool isGameActive() = 0;                // игра активна
+    virtual bool isGameActive() = 0;                // game is active
     virtual Result getGameResult() = 0;
 
     virtual bool isCastlingMove(const std::string& move, std::string& rockMove) = 0;
-    virtual bool checkMove(const std::string& move) = 0;   // проверка хода, вызов функции D для проверки
-    virtual std::string getHelp() = 0;              // получить подсказку
-    virtual void setMove(const std::string& move) = 0;     // ввод хода
-    virtual std::string getMove() = 0;              // получить ход движка
+    virtual bool checkMove(const std::string& move) = 0;   // check move, call D function for validation
+    virtual std::string getHelp() = 0;              // get hint
+    virtual void setMove(const std::string& move) = 0;     // input move
+    virtual std::string getMove() = 0;              // get engine move
 
     virtual int getFigureCollor(const std::string& field) = 0;
     virtual bool getIsLastMoveValid() = 0;
@@ -37,7 +37,7 @@ public:
     virtual std::string getKingPosition(int color) = 0;
     virtual std::string isCheck() = 0;
 
-    virtual std::string showBoard() = 0;            // вывести доску в консоль
+    virtual std::string showBoard() = 0;            // print board to console
 };
 
 

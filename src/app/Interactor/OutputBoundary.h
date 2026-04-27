@@ -28,14 +28,14 @@ class OutputBoundary
 public:
     virtual ~OutputBoundary() = default;
 
-    // Глобальные настройки
+    // Global settings
     virtual void setFields(Fields &fields) = 0;
     virtual void setMode(GameState state) = 0;
     virtual void setActiveSide(MoveTurn side) = 0;
     virtual void setGameMode(GameMode mode) = 0;
 
-    // Игровые события (устанавливают флаги для run)
-    virtual void clearAllHighlights() = 0; // Сброс всех подсветок хода
+    // Game events (set flags for run)
+    virtual void clearAllHighlights() = 0; // Reset all move highlights
 
     virtual void setHelpMove(int from, int to) = 0;
     virtual void setActiveFigure(int index) = 0;
@@ -43,7 +43,7 @@ public:
     virtual void setLastMove(int from, int to) = 0;
     virtual void setInvalidLastMove(int from, int to) = 0;
 
-    // Критические состояния
+    // Critical states
     virtual void setCheck(int posAttack, int posKing) = 0;
     virtual void setCheckmate(int winningSide, int whiteKingPos, int blackKingPos) = 0;
     virtual void setStalemate(int whiteKingPos, int blackKingPos) = 0;
