@@ -283,9 +283,18 @@ void fullTest()
     }
     delete eb;
 
+    qDebug() << "=====EP output=====";
+    eb = new ChessEngine(PVP, 25, 4);
+    eb->setMove("e2e4"); eb->setMove("b8c6");
+    eb->setMove("e4e5"); eb->setMove("d7d5");
+    eb->setMove("e5d6"); // exd6
+    qDebug() << eb->showBoard().c_str();
+    qDebug() << eb->getPGN().c_str();
+    delete eb;
+
     qDebug() << "=====Time test=====";
     float time = 0;
-    const int rounds = 50;
+    const int rounds = 1;
     for (int tests = 0; tests < rounds; ++tests) {
         eb = new ChessEngine(PVP, 0, 3);
         timer.start();
@@ -328,37 +337,36 @@ int main(int argc, char* argv[])
 
     fullTest();
 
-    // сам с собой в pvp
-    playCount = 1;
-    while(playCount--)
-    {
-        eb = new ChessEngine(PVP, playCount, 4);
-        while(eb->isGameActive())
-        {
-            auto moveW = eb->getHelp();
-            eb->setMove(moveW);
+    // // сам с собой в pvp
+    // playCount = 1;
+    // while(playCount--)
+    // {
+    //     eb = new ChessEngine(PVP, playCount, 4);
+    //     while(eb->isGameActive())
+    //     {
+    //         auto moveW = eb->getHelp();
+    //         eb->setMove(moveW);
 
-            auto moveB = eb->getHelp();
-            eb->setMove(moveB);
-        }
-        cout << eb->showBoard() << endl; // вывод доски
-        delete eb;
-    }
+    //         auto moveB = eb->getHelp();
+    //         eb->setMove(moveB);
+    //     }
+    //     cout << eb->showBoard() << endl; // вывод доски
+    //     delete eb;
+    // }
 
-    // сам с собой за чёрных
-    playCount = 1;
-    while(playCount--)
-    {
-        eb = new ChessEngine(BLACK, 25, 4);
-        while(eb->isGameActive())
-        {
-            auto moveW = eb->getHelp();
-            eb->setMove(moveW);
-        }
-        cout << eb->showBoard() << endl; // вывод доски
-        delete eb;
-    }
-    return 0;
+    // // сам с собой за чёрных
+    // playCount = 1;
+    // while(playCount--)
+    // {
+    //     eb = new ChessEngine(BLACK, 25, 4);
+    //     while(eb->isGameActive())
+    //     {
+    //         auto moveW = eb->getHelp();
+    //         eb->setMove(moveW);
+    //     }
+    //     cout << eb->showBoard() << endl; // вывод доски
+    //     delete eb;
+    // }
 
     // MANUAL GAME
     char user_move[5];

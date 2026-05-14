@@ -68,10 +68,17 @@ ChessEngine::ChessEngine(EngineMode side, unsigned int seed, int depth)
         moveNumber++;
         startThink = getCurrentTimeMs();
         kLast = k;
+        std::string engineMove;
 #if SHOW_MOVE
-        printf("%d. %s\n", moveNumber, getMove().c_str());
+        // Get from, to from cE
+        int fromIdxE = cE[0] - 16 * cE[1] + 799;
+        int toIdxE   = cE[2] - 16 * cE[3] + 799;
+        // From the saved board (bBackup) get the piece type and if it was a capture
+        int pieceTypeE = cE[toIdxE] & 7;
+        engineMove = formatPGNMove(fromIdxE, toIdxE, false, pieceTypeE);
+        printf("%d. %s\n", moveNumber, engineMove.c_str());
 #endif
-        pgn->addMove(getMove());
+        pgn->addMove(engineMove);
     }
     else
     {
@@ -104,7 +111,10 @@ void ChessEngine::loop()
     int fromIdx = c[0] - 16 * c[1] + 799;
     int toIdx   = c[2] - 16 * c[3] + 799;
     int pieceType = b[c[0] - 16 * c[1] + 799] & 7;
-    bool isCapture = (b[c[2] - 16 * c[3] + 799] != 0);
+    bool isCapture = (b[toIdx] != 0);
+    if (pieceType < 3 && toIdx == epSquare && b[toIdx] == 0) {
+        isCapture = true;  // en passant capture
+    }
 
     makeBackup();
     K=I;
@@ -190,6 +200,10 @@ void ChessEngine::loop()
     // From the saved board (bBackup) get the piece type and if it was a capture
     int pieceTypeE = bBackup[fromIdxE] & 7;
     bool isCaptureE = (bBackup[toIdxE] != 0);
+    if (pieceTypeE < 3 && toIdxE == epSquare) {  // epSquare из текущего состояния (до хода)
+        isCaptureE = true;  // en passant capture
+    }
+
     updateEpSquare(cE);
     // Format the move
     std::string engineMove = formatPGNMove(fromIdxE, toIdxE, isCaptureE, pieceTypeE);
