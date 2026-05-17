@@ -227,7 +227,9 @@ void DriverLED::clearHighlight()
 void DriverLED::loadLedSettings() {
 	if(flash->isInit())
 	{
-		flash->read(512, (uint8_t*)&this->brightness, sizeof(this->brightness));
+		uint8_t bright = 30;
+		flash->read(512, &bright, sizeof(bright));
+		setBrightness(bright);
 	}
 }
 
