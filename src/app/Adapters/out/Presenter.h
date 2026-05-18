@@ -26,8 +26,8 @@ struct ChessTheme {
     Color error{255,0,0};         	// Error (Red)
     Color checkKing{255,0,0};       // King in check (Red)
     Color checkAttack{0,0,255};     // Check attacker (Blue)
-    Color mateKingWin{255,0,0};     // Winning king in checkmate (Red)
-    Color mateKingLose{0,255,0};    // King in checkmate (losing side) (Green)
+    Color mateKingWin{0,255,0};     // Winning king in checkmate (Green)
+    Color mateKingLose{255,0,0};    // King in checkmate (losing side) (Red)
     Color stalemate{0,255,255};		// Stalemate (Cyan) / Draw (Light Blue)
 };
 
