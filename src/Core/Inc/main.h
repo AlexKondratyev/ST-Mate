@@ -64,6 +64,8 @@ static const char* helpText =
 "SERVICE:0/1     - Disable/enable service mode\n"
 "VOLT?           - Show CPU voltage\n"
 "CALIBRATE       - Start sensor calibration (board must be empty)\n"
+"TABLE?          - Show current calibration table\n"
+"LOADTABLE       - Load calibration table from flash\n"
 "TRIGLV?         - Show trigger level\n"
 "TRIGLV:X        - Set trigger level (X = integer)\n"
 "ALPHA?          - Show smoothing coefficient\n"

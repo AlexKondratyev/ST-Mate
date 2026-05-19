@@ -19,8 +19,8 @@
 
 #pragma pack(push, 1)
 struct FieldsSettings {
-	uint16_t TRIGGER_LEVEL = 25;
-	float alpha = 0.125f;  // Coefficient (the smaller, the stronger the smoothing)
+	uint16_t TRIGGER_LEVEL = 40;
+	float alpha = 0.10f;  // Coefficient (the smaller, the stronger the smoothing)
 	int32_t calibration_value[COUNT_ROW*COUNT_ROW] = {
 		2062, 1972, 2033, 1975, 1972, 1993, 2005, 2013,
 		2013, 1952, 1950, 1971, 2000, 1993, 1931, 2063,
@@ -123,12 +123,7 @@ void FieldDriver::calibration()
 
 	printf("Calibration complete in: %ld ms\n", HAL_GetTick()-start);
 	printf("int32_t calibration_value[COUNT_ROW*COUNT_ROW] = {\n\t");
-	for (int i = 0; i < 64; i++)
-	{
-		printf("%ld, ",fieldsSetting.calibration_value[i]);
-        if (i % 8 == 7)
-        	printf("\n\t");
-	}
+	printCalibrateTable();
 	printf("};\n");
 	isCalibrate = false;
 }
@@ -166,8 +161,8 @@ void FieldDriver::run()
 
 	for (int i = 0; i < 64; i++)
 	{
-// 1. Apply filter
-    filtered_values[i] = (fieldsSetting.alpha * (float)value[i]) + ((1.0f - fieldsSetting.alpha) * filtered_values[i]);
+		// 1. Apply filter
+		filtered_values[i] = (fieldsSetting.alpha * (float)value[i]) + ((1.0f - fieldsSetting.alpha) * filtered_values[i]);
 
         int32_t diff = (int32_t)filtered_values[i] - fieldsSetting.calibration_value[i];
         Fields::FieldState currentState = fields->getField(i);
@@ -203,6 +198,19 @@ void FieldDriver::messege(const std::string &message)
 	if (message.find("CALIBRATE") != std::string::npos)
 	{
 		isCalibrate = true;
+	}
+		// Show calibration table
+	if (message.find("TABLE?") != std::string::npos)
+	{
+		printf("Table:\n");
+		printCalibrateTable();
+	}
+	// Load calibration table from flash
+	if (message.find("LOADTABLE") != std::string::npos)
+	{
+		loadFieldSettings();
+		printf("Table loaded:\n");
+		printCalibrateTable();
 	}
 	if (message.find("TRIGLV?") != std::string::npos)
 	{
@@ -265,4 +273,15 @@ void FieldDriver::printField()
         printf("\n");
     }
     printf("\n");
+}
+
+void FieldDriver::printCalibrateTable()
+{
+	for (int i = 0; i < 64; i++)
+	{
+		printf("%ld, ",fieldsSetting.calibration_value[i]);
+        if (i % 8 == 7)
+        	printf("\n\t");
+	}
+
 }

@@ -27,6 +27,7 @@ private:
 	void loadFieldSettings();
 	void saveFieldSettings();
 	void printField();
+	void printCalibrateTable();
 public:
 	FieldDriver(
 			Fields& fields,

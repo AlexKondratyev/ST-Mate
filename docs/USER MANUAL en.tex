@@ -487,9 +487,11 @@ All questions regarding operation, configuration, and modification of the «ST-M
 \texttt{SERVICE:X} & Enable/disable service mode. X=0 - disabled, X=1 - enabled. \\ \hline
 \texttt{VOLT?} & Request processor supply voltage (returns value in millivolts). \\ \hline
 \texttt{CALIBRATE} & Start sensor calibration (board must be empty). \\ \hline
-\texttt{TRIGLV?} & Request current trigger level of sensors (default 25). \\ \hline
+\texttt{TABLE?} & Request current sensor readings (returns 64 values). \\ \hline
+\texttt{LOADTABLE} & Load calibration table from memory (returns 64 values). \\ \hline
+\texttt{TRIGLV?} & Request current trigger level of sensors (default 40). \\ \hline
 \texttt{TRIGLV:X} & Set sensor trigger level (X is an integer depending on calibration). \\ \hline
-\texttt{ALPHA?} & Request current exponential smoothing coefficient (default 8). \\ \hline
+\texttt{ALPHA?} & Request current exponential smoothing coefficient (default 10). \\ \hline
 \texttt{ALPHA:X} & Set exponential smoothing coefficient (X is an integer). \\ \hline
 \multicolumn{2}{|c|}{\textbf{User Commands}} \\ \hline
 \texttt{HELP} & Request list of available commands. \\ \hline
