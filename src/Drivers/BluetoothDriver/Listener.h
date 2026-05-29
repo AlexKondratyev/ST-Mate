@@ -14,7 +14,7 @@ class Listener
 {
 public:
 	virtual ~Listener(){};
-	virtual void messege(const std::string &message) = 0;
+	virtual void message(const std::string &message) = 0;
 };
 
 #endif /* BLUETOOTHDRIVER_LISTENER_H_ */

@@ -130,7 +130,7 @@ void printInitialisation()
 
 class MainListener : public Listener
 {
-	void messege(const std::string &message) override
+	void message(const std::string &message) override
 	{
 		int param = 0;
 		if (message.find("HELP") != std::string::npos)

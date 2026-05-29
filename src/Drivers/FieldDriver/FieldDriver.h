@@ -43,7 +43,7 @@ public:
 
 	float getVRef() const {return voltage;}
 
-	virtual void messege(const std::string &message) override;
+	virtual void message(const std::string &message) override;
 
 	void setForceCalibrate() { this->isCalibrate = true; }
 };

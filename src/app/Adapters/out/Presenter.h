@@ -74,7 +74,7 @@ public:
 
     void run();
 
-    virtual void messege(const std::string &message) override;
+    virtual void message(const std::string &message) override;
     virtual void setFields(Fields &fields) override;
     virtual void setMode(GameState state) override;
     virtual void setActiveSide(MoveTurn side) override;

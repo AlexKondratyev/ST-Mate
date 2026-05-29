@@ -67,7 +67,7 @@ public:
 	void setDateTime(const struct tm &datetime);
 	void setMode(GameMode mode);
 
-	virtual void messege(const std::string &message) override;
+	virtual void message(const std::string &message) override;
 protected:
 	virtual void setFields(Fields &filds) override;
 	virtual void figureMove(const std::string&, int index, bool isSet) override;

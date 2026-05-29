@@ -192,7 +192,7 @@ void FieldDriver::run()
 		interface->fieldStatus(*fields);
 }
 
-void FieldDriver::messege(const std::string &message)
+void FieldDriver::message(const std::string &message)
 {
 	int param = 0;
 	if (message.find("CALIBRATE") != std::string::npos)

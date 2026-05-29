@@ -45,7 +45,7 @@ private:
 	{
 		std::list<Listener *>::iterator iterator = listListeners.begin();
 		while (iterator != listListeners.end()) {
-		  (*iterator)->messege(message);
+		  (*iterator)->message(message);
 		  ++iterator;
 		}
 	}

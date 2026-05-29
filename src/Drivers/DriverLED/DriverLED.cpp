@@ -191,7 +191,7 @@ void TIM4_IRQHandler_Custom()
 
 }
 
-void DriverLED::messege(const std::string &message)
+void DriverLED::message(const std::string &message)
 {
 	// get brightness
 	if (message.find("BRIGHT?") != std::string::npos)

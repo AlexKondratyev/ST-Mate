@@ -205,7 +205,7 @@ void Presenter::run()
     }
 }
 
-void Presenter::messege(const std::string &message)
+void Presenter::message(const std::string &message)
 {
 	if (message.find("THEME:") != std::string::npos)
 	{

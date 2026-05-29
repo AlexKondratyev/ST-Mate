@@ -47,7 +47,7 @@ public:
 	void setPixel(uint16_t diodeId, uint8_t r, uint8_t g, uint8_t b);
 	void refresh();
 
-	virtual void messege(const std::string &message) override;
+	virtual void message(const std::string &message) override;
 	virtual void setFieldHighlight(int index, unsigned char r, unsigned char g, unsigned char b) override;
 	virtual void clearHighlight() override;
 };

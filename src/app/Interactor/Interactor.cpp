@@ -245,7 +245,7 @@ void Interactor::checkActiveGame()
 	}
 }
 
-void Interactor::messege(const std::string &message)
+void Interactor::message(const std::string &message)
 {
 	if (message.find("EVENT?") != std::string::npos)
 	{
