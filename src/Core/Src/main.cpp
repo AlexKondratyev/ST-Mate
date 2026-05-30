@@ -1,7 +1,7 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file           : main.c
+  * @file           : main.cpp
   * @brief          : Main program body
   ******************************************************************************
   * @attention
@@ -73,37 +73,34 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-extern "C" {
-int _write(int file, char *ptr, int len)
-{
-  (void)file;
-  int DataIdx;
+struct HardwareConfig {
+    GameMode  gameMode;
+    bool      prngEnabled;   // SET_PRNG_Pin == LOW
+    bool      helpPressed;   // GET_HELP_Pin == LOW 
+};
 
-  HAL_UART_Transmit(&huart1, (const uint8_t*)ptr, len, 100);
-  for (DataIdx = 0; DataIdx < len; DataIdx++)
-  {
-    ITM_SendChar(*ptr++);
-  }
-  return len;
-}
-}
+struct RuntimeState {
+    // Data
+    float        cpuVoltage  = 0.0f;
+    struct tm    datetime    = {};
+    unsigned int seed        = 0;
 
-struct SystemState {
-	bool fieldTest = false;
-	bool needReboot = false;
-	bool needForceCalibrate = false;
-	bool isFlashInit = false;
-	bool needSetTime = true;
-	bool isActivatePRNG = false;
-	bool isNeedHelp = false;
-	bool isActiveHelpButton = true;
+    // Commands 
+    bool needReboot          = false;
+    bool needSetTime         = true;
 
-	GameMode portGameMode;
-	float cpuV;
-	struct tm dt;
-	unsigned int seed = 0;
-}state_;
+    // Settings that can be changed at runtime
+    bool helpButtonActive    = true;
+    bool helpButtonPressed   = false;  // Current state of the button
+    bool diagnosticMode      = false;
+};
 
+static HardwareConfig hwCfg;
+static RuntimeState   state;
+
+// ============================================================
+// Help functions
+// ============================================================
 
 void reboot()
 {
@@ -111,118 +108,168 @@ void reboot()
 	NVIC_SystemReset();
 }
 
-void printInitialisation()
+static HardwareConfig readHardwareConfig()
 {
-	printf("Voltage CPU: %.3f: %s\n", state_.cpuV, (state_.cpuV > 1.71 || state_.cpuV > 3.6) ? "OK":"ERROR" );
-	printf("Flash state: %s\n", state_.isFlashInit ? "OK":"ERROR");
-	printf("DateTime: %02d.%02d.%d %02d:%02d:%02d\n",
-			state_.dt.tm_mday,
-			state_.dt.tm_mon,
-			state_.dt.tm_year,
-			state_.dt.tm_hour,
-			state_.dt.tm_min,
-			state_.dt.tm_sec);
-	printf("Mode: %s\n", modeStr[state_.portGameMode]);
-	printf("RNG: %s", state_.isActivatePRNG ? "ON":"OFF"); printf(". seed: %d\n", state_.seed);
-	printf("Initialization...successes \n");
-	printf(logo, version);
+    HardwareConfig cfg;
+    cfg.gameMode    = (GameMode)(HAL_GPIO_ReadPin(GPIOB, GM1_Pin)
+                                + HAL_GPIO_ReadPin(GPIOB, GM0_Pin));
+    cfg.prngEnabled = (HAL_GPIO_ReadPin(GPIOB, SET_PRNG_Pin) == GPIO_PIN_RESET);
+    cfg.helpPressed = (HAL_GPIO_ReadPin(GPIOB, GET_HELP_Pin) == GPIO_PIN_RESET);
+    return cfg;
 }
+
+static void printBanner(float cpuV, bool flashOk, const struct tm& dt,
+                        GameMode mode, bool prng, unsigned int seed)
+{
+    printf("Voltage CPU: %.3f: %s\n", cpuV,
+           (cpuV > 1.71f && cpuV < 3.6f) ? "OK" : "ERROR");
+    printf("Flash state: %s\n", flashOk ? "OK" : "ERROR");
+    printf("DateTime: %02d.%02d.%d %02d:%02d:%02d\n",
+           dt.tm_mday, dt.tm_mon, dt.tm_year,
+           dt.tm_hour, dt.tm_min, dt.tm_sec);
+    printf("Mode: %s\n", modeStr[mode]);
+    printf("RNG: %s. seed: %u\n", prng ? "ON" : "OFF", seed);
+    printf("Initialization...successes\n");
+    printf(logo, version);
+}
+
+// ============================================================
+// Listener — разбит на методы по команде
+// ============================================================
 
 class MainListener : public Listener
 {
-	void message(const std::string &message) override
-	{
-		int param = 0;
-		if (message.find("HELP") != std::string::npos)
-		{
-			printf(helpText);
-		}
-		if (message.find("REBOOT") != std::string::npos)
-		{
-			state_.needReboot = true;
-		}
-		if (message.find("VOLT?") != std::string::npos)
-		{
-			printf("CPU Voltage: %.3f V\n", state_.cpuV);
-		}
-		if (message.find("SERVICE:") != std::string::npos)
-		{
-		    if (sscanf(message.c_str(), "SERVICE:%d", &param) == 1)
-		    {
-		    	if (param >= 0 && param <= 1)
-		    	{
-		    		state_.fieldTest = (bool)param;
-		    		printf("Service mode is: %s\n",param==1?"on":"off");
-		    	}
-		    }
-		}
-		if (message.find("SEED?") != std::string::npos)
-		{
-			printf("Seed: %d\n", state_.seed);
-		}
-		if (message.find("SEED:") != std::string::npos)
-		{
-		    const char* value = message.c_str() + 5; // skip "SEED:"
-		    // Try to parse as decimal number
-		    int num;
-		    if (sscanf(value, "%d", &num) == 1)
-		    {
-		    	state_.seed = num;
-		        printf("Seed set: %d\n", state_.seed);
-		        return;
-		    }
-		    // Otherwise, calculate string hash)
-		    unsigned long hash = 5381;
-		    int c;
-		    while ((c = *value++) != '\0')
-		        hash = ((hash << 5) + hash) + c; // hash * 33 + c
-		    state_.seed = hash;
-		    printf("Seed set: %d (from string)\n", state_.seed);
-		}
+    void handleReboot()
+    {
+        state.needReboot = true;
+    }
 
-		if (message.find("HINTBTN:") != std::string::npos)
-		{
-		    if (sscanf(message.c_str(), "HINTBTN:%d", &param) == 1)
-		    {
-		    	if (param >= 0 && param <= 1)
-		    	{
-		    		state_.isActiveHelpButton = (bool)param;
-		    		printf("Help button is: %s\n",param==1?"active":"inactive");
-		    	}
-		    }
-		}
-		if (message.find("TIME?") != std::string::npos)
-		{
-			RTC_UNIT dt = rtc_GetTime();
-			printf("Time: %02d.%02d.%02d %02d:%02d:%02d\n",
-				  dt.date,
-				  dt.month,
-				  dt.year,
-				  dt.hours,
-				  dt.minutes,
-				  dt.seconds);
-		}
+    void handleVoltage()
+    {
+        printf("CPU Voltage: %.3f V\n", state.cpuVoltage);
+    }
 
-		if (message.find("TIME:") != std::string::npos)
-		{
-		    int date, month, year, hours,  minutes, seconds;
-		    // Looking for the start of the time string after "TIME:"
-		    const char* msg = message.c_str() + 5; // skip "TIME:"
-		    if (sscanf(msg, "%2d.%2d.%2d %2d:%2d:%2d",
-						  &date, &month, &year,
-						  &hours, &minutes ,&seconds) == 6)
-		    {
-		    	RTC_UNIT dt =  {year, month, date, hours, minutes, seconds};
-		        rtc_SetTime(dt);
-		        state_.needSetTime = true;
-		        printf("Time set: %02d.%02d.%02d %02d:%02d:%02d\n",
-		               dt.date, dt.month, dt.year,
-		               dt.hours, dt.minutes, dt.seconds);
-		    }
-		}
+    void handleService(const std::string& msg)
+    {
+        int param = 0;
+        if (sscanf(msg.c_str(), "SERVICE:%d", &param) == 1 && param >= 0 && param <= 1) {
+            state.diagnosticMode = (bool)param;
+            printf("Service mode is: %s\n", param ? "on" : "off");
+        }
+    }
 
-	}
+    void handleSeedQuery()
+    {
+        printf("Seed: %u\n", state.seed);
+    }
+
+    // Seed может быть числом или строкой
+    void handleSeedSet(const std::string& msg)
+    {
+        const char* value = msg.c_str() + 5; // skip "SEED:"
+        int num = 0;
+        if (sscanf(value, "%d", &num) == 1) {
+            state.seed = (unsigned int)num;
+            printf("Seed set: %u\n", state.seed);
+            return;
+        }
+        // hash для строки
+        unsigned long hash = 5381;
+        for (const char* p = value; *p; ++p)
+            hash = ((hash << 5) + hash) + (unsigned char)*p;
+        state.seed = (unsigned int)hash;
+        printf("Seed set: %u (from string)\n", state.seed);
+    }
+
+    void handleHintButton(const std::string& msg)
+    {
+        int param = 0;
+        if (sscanf(msg.c_str(), "HINTBTN:%d", &param) == 1 && param >= 0 && param <= 1) {
+            state.helpButtonActive = (bool)param;
+            printf("Help button is: %s\n", param ? "active" : "inactive");
+        }
+    }
+
+    void handleTimeQuery()
+    {
+        RTC_UNIT dt = rtc_GetTime();
+        printf("Time: %02d.%02d.%02d %02d:%02d:%02d\n",
+               dt.date, dt.month, dt.year,
+               dt.hours, dt.minutes, dt.seconds);
+    }
+
+    void handleTimeSet(const std::string& msg)
+    {
+        int date, month, year, hours, minutes, seconds;
+        const char* payload = msg.c_str() + 5; // skip "TIME:"
+        if (sscanf(payload, "%2d.%2d.%2d %2d:%2d:%2d",
+                   &date, &month, &year, &hours, &minutes, &seconds) == 6)
+        {
+            RTC_UNIT dt = {year, month, date, hours, minutes, seconds};
+            rtc_SetTime(dt);
+            state.needSetTime = true;
+            printf("Time set: %02d.%02d.%02d %02d:%02d:%02d\n",
+                   dt.date, dt.month, dt.year,
+                   dt.hours, dt.minutes, dt.seconds);
+        }
+    }
+
+public:
+    void message(const std::string& msg) override
+    {
+        if (msg.find("HELP")     != std::string::npos) printf(helpText);
+        if (msg.find("REBOOT")   != std::string::npos) handleReboot();
+        if (msg.find("VOLT?")    != std::string::npos) handleVoltage();
+        if (msg.find("SERVICE:") != std::string::npos) handleService(msg);
+        if (msg.find("SEED?")    != std::string::npos) handleSeedQuery();
+        if (msg.find("SEED:")    != std::string::npos) handleSeedSet(msg);
+        if (msg.find("HINTBTN:") != std::string::npos) handleHintButton(msg);
+        if (msg.find("TIME?")    != std::string::npos) handleTimeQuery();
+        if (msg.find("TIME:")    != std::string::npos) handleTimeSet(msg);
+    }
 };
+
+// ============================================================
+// Main loop functions
+// ============================================================
+
+static void runDiagnosticMode(FieldDriver& fieldDriver, DriverLED& led, Fields& fields)
+{
+    fieldDriver.run();
+    for (int i = 0; i < 64; i++) {
+        switch (fields.getField(i)) {
+            case Fields::white: led.setPixel(i,   0, 128,   0); break;
+            case Fields::black: led.setPixel(i, 128,   0,   0); break;
+            case Fields::none:  led.setPixel(i,   0,   0,   0); break;
+        }
+    }
+    led.refresh();
+}
+
+static void runGameMode(BluetoothDriver& bluetooth,
+                        FieldDriver& fieldDriver,
+                        Interactor& interactor,
+                        Presenter& presenter,
+                        DriverLED& led)
+{
+    // Update values that may change at runtime
+    GameMode currentMode = (GameMode)(HAL_GPIO_ReadPin(GPIOB, GM1_Pin)
+                                    + HAL_GPIO_ReadPin(GPIOB, GM0_Pin));
+    bool helpNow = (HAL_GPIO_ReadPin(GPIOB, GET_HELP_Pin) == GPIO_PIN_RESET)
+                   && state.helpButtonActive;
+
+    state.cpuVoltage = fieldDriver.getVRef();
+
+    bluetooth.run();
+    interactor.setSeed(state.seed);
+    interactor.setMode(currentMode);
+    interactor.setIsNeedHelp(helpNow);
+
+    fieldDriver.run();
+    interactor.run();
+    presenter.run();
+    led.refresh();
+}
 
 /* USER CODE END 0 */
 
@@ -263,113 +310,74 @@ int main(void)
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
 
-  BluetoothDriver bluetooth;
+  // Read hardware config (buttons, jumpers) into hwCfg struct
+  hwCfg = readHardwareConfig();
 
-  FlashDriver flash(&hspi2, SPI2_CS_GPIO_Port, SPI2_CS_Pin);
-  state_.isFlashInit = flash.isInit();
+  // Create main objects
+  BluetoothDriver 	bluetooth;
+  FlashDriver     	flash(&hspi2, SPI2_CS_GPIO_Port, SPI2_CS_Pin);
+  DriverLED       	led(&flash);
+  Presenter       	presenter(&led, &flash);
+  Interactor     	interactor(hwCfg.gameMode, &presenter, &flash);
+  Controller 		controller(&interactor);
+  Fields          	fields;
+  FieldDriver     	fieldDriver(fields, &controller, &flash);
 
-  RTC_UNIT dtRTC = rtc_GetTime();
-  state_.dt.tm_year = dtRTC.year+2000;
-  state_.dt.tm_mon = dtRTC.month;
-  state_.dt.tm_mday = dtRTC.date;
-  state_.dt.tm_hour = dtRTC.hours;
-  state_.dt.tm_min = dtRTC.minutes;
-  state_.dt.tm_sec = dtRTC.seconds;
-
-  state_.portGameMode = (GameMode)(HAL_GPIO_ReadPin(GPIOB, GM1_Pin) + HAL_GPIO_ReadPin(GPIOB, GM0_Pin));
-  state_.isActivatePRNG = HAL_GPIO_ReadPin(GPIOB, SET_PRNG_Pin) == GPIO_PIN_RESET;
-  state_.isNeedHelp = (HAL_GPIO_ReadPin(GPIOB, GET_HELP_Pin) == GPIO_PIN_RESET);     // check button PB10
-
-  if (state_.isNeedHelp)
+  // Read initial time from RTC
   {
-	  if (state_.isActivatePRNG)
-	  {
-		  state_.fieldTest = true;
-		  state_.portGameMode = DIAGNOSTIC;
-	  }
-	  else
-		  state_.needForceCalibrate = true;
+      RTC_UNIT dtRTC = rtc_GetTime();
+      state.datetime.tm_year = dtRTC.year + 2000;
+      state.datetime.tm_mon  = dtRTC.month;
+      state.datetime.tm_mday = dtRTC.date;
+      state.datetime.tm_hour = dtRTC.hours;
+      state.datetime.tm_min  = dtRTC.minutes;
+      state.datetime.tm_sec  = dtRTC.seconds;
   }
 
+  // Define mode based on buttons
+  if (hwCfg.helpPressed) {
+      if (hwCfg.prngEnabled) {
+          // Both HELP and SERVICE: Diagnostic mode
+          state.diagnosticMode = true;
+          interactor.setMode(DIAGNOSTIC);
+      } else {
+          // Help only: Force field calibration
+          fieldDriver.setForceCalibrate();
+      }
+  }
+
+  state.cpuVoltage = fieldDriver.getVRef();
+  state.seed = hwCfg.prngEnabled ? fieldDriver.getSeed() : 13;
+  interactor.setSeed(state.seed);
+
+  // Subscribe to Bluetooth messages
   MainListener mainListener;
-
-  DriverLED led(&flash);
-
-  Presenter presenter(&led, &flash);
-  Interactor interactor(state_.portGameMode,
-		  	  	  	  	  &presenter,
-						  &flash);
-  Controller controller(&interactor);
-
-  Fields fields;
-  FieldDriver fieldDriver(
-						  fields,
-		  	  	  	  	  &controller,
-						  &flash
-						  );
-  if (state_.needForceCalibrate)
-	  fieldDriver.setForceCalibrate();
-
-  // Subscribe to commands from Bluetooth module
   bluetooth.attach(&mainListener);
   bluetooth.attach(&led);
   bluetooth.attach(&fieldDriver);
   bluetooth.attach(&presenter);
   bluetooth.attach(&interactor);
 
-  state_.cpuV = fieldDriver.getVRef();
-
-  if (state_.isActivatePRNG)	// if false, seed default
-	  state_.seed = fieldDriver.getSeed();
-  else
-	  state_.seed = 13;  		// default seed for white 1. e2e4
-  interactor.setSeed(state_.seed);
-
-  printInitialisation();
+  printBanner(state.cpuVoltage, flash.isInit(), state.datetime,
+              hwCfg.gameMode, hwCfg.prngEnabled, state.seed);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if (state_.needSetTime)
-	  {
-		  interactor.setDateTime(state_.dt);
-		  state_.needSetTime = false;
-	  }
+      if (state.needSetTime) {
+          interactor.setDateTime(state.datetime);
+          state.needSetTime = false;
+      }
 
-	  if (state_.needReboot)
-		  reboot();
+      if (state.needReboot)
+          reboot();
 
-	  state_.cpuV = fieldDriver.getVRef();
-	  state_.portGameMode = (GameMode)(HAL_GPIO_ReadPin(GPIOB, GM1_Pin) + HAL_GPIO_ReadPin(GPIOB, GM0_Pin));
-	  state_.isNeedHelp = (HAL_GPIO_ReadPin(GPIOB, GET_HELP_Pin) == GPIO_PIN_RESET) && state_.isActiveHelpButton;     // check button PB10
-
-	  if (state_.fieldTest)
-	  {
-		  fieldDriver.run();
-		  for(int i = 0; i < 64; i++)
-		  {
-			  switch (fields.getField(i)) {
-				case Fields::white: led.setPixel(i, 0, 128, 0); break;
-				case Fields::black: led.setPixel(i, 128, 0, 0); break;
-				case Fields::none: led.setPixel(i, 0, 0, 0); break;
-			  }
-		  }
-		  led.refresh();
-	  }
-	  else
-	  {
-		  bluetooth.run();
-		  interactor.setSeed(state_.seed);
-		  interactor.setMode(state_.portGameMode);
-		  interactor.setIsNeedHelp(state_.isNeedHelp);
-
-		  fieldDriver.run();
-		  interactor.run();
-		  presenter.run();
-		  led.refresh();
-	  }
+      if (state.diagnosticMode)
+          runDiagnosticMode(fieldDriver, led, fields);
+      else
+          runGameMode(bluetooth, fieldDriver, interactor, presenter, led);
 	  /* USER CODE END WHILE */
 
 	  /* USER CODE BEGIN 3 */
@@ -427,6 +435,23 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
+// ============================================================
+// System function
+// ============================================================
+extern "C" {
+int _write(int file, char *ptr, int len)
+{
+  (void)file;
+  int DataIdx;
+
+  HAL_UART_Transmit(&huart1, (const uint8_t*)ptr, len, 100);
+  for (DataIdx = 0; DataIdx < len; DataIdx++)
+  {
+    ITM_SendChar(*ptr++);
+  }
+  return len;
+}
+}
 /* USER CODE END 4 */
 
 /**
