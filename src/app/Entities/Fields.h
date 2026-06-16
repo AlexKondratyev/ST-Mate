@@ -10,10 +10,11 @@
 
 
 #include <memory.h>
+#include <stdint.h>
 
 class Fields {
 public:
-	enum FieldState {none, white, black};
+	enum FieldState : uint8_t {none, white, black};
 
 private:
 	FieldState fields[64] = {none};

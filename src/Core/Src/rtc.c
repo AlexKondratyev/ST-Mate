@@ -57,7 +57,7 @@ void MX_RTC_Init(void)
   RTC_UNIT dtRTC = rtc_GetTime();
 
   int date, month, year, hours,  minutes, seconds;
-  sscanf(completeDate, "%2d.%2d.%2d %2d:%2d:%2d",
+  sscanf((const char*)completeDate, "%2d.%2d.%2d %2d:%2d:%2d",
 		  &date, &month, &year,
 		  &hours, &minutes ,&seconds);
   RTC_UNIT dtBuild =  {year, month,date,hours, minutes, seconds};

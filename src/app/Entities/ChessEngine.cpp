@@ -615,7 +615,7 @@ bool ChessEngine::isMoveValid()
         std::string s = (k != 8?"White":"Black");
         s.append(" make invalid move ").append(c).push_back(' ');
         s.push_back('\n');
-        printf(s.c_str());
+        printf("%s", s.c_str());
         isLastMoveValid = false;
     }
     return isLastMoveValid;

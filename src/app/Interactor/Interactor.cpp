@@ -83,7 +83,7 @@ void Interactor::run()
 					break;
 			}
 
-			volatile bool newGame = isStartPosition() && !e->getIsLastMoveValid();
+			bool newGame = isStartPosition() && !e->getIsLastMoveValid();
 			if (newGame)
 			{
 				gameState = NO_POSITION;

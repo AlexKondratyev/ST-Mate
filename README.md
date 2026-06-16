@@ -37,7 +37,8 @@ ST-Mate is a port of the legendary chess engine **micro-Max** (author H.G. Mulle
 1. Clone the repository:
    ```bash
    git clone https://github.com/AlexKondratyev/ST-Mate.git
-   cd STMate
+
+2. Import project in STM32CubeIDE.
 
 ### Requirements
 - STM32F103C8 (Blue Pill) or compatible board
@@ -55,11 +56,11 @@ ST-Mate is a port of the legendary chess engine **micro-Max** (author H.G. Mulle
   All available commands are described in user_manual.pdf appendix A.
 
 ## Hardware
-Microcontroller: STM32F103C8 (72 MHz, 64 KB Flash, 20 KB RAM)
-Field sensors: Hall sensor matrix SS49E (64 pcs.)
-Display: ARGB LED strip (WS2812)
-Communication: Bluetooth module (HC-06)
-Power: 5V via USB.
+- Microcontroller: STM32F103C8 (72 MHz, 64 KB Flash, 20 KB RAM)
+- Field sensors: Hall sensor matrix SS49E (64 pcs.)
+- Display: ARGB LED strip (WS2812)
+- Communication: Bluetooth module (HC-06)
+- Power: 5V via USB.
 
 ## License
 > **Software** is distributed under the **GPLv3** license.  

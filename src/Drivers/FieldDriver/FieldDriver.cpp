@@ -38,7 +38,7 @@ uint16_t value[COUNT_ROW*COUNT_ROW] = {0};
 uint16_t filtered_values[COUNT_ROW*COUNT_ROW] = {0}; // Store current average
 uint8_t selector = 0;
 uint16_t adcValue[CHANNEL_NUM+1] = {0};
-uint16_t vRef = 0;
+uint16_t vRef = 3300;
 
 void setChannel(uint8_t ch)
 {
@@ -141,7 +141,7 @@ void FieldDriver::readState()
 	selector = 0;
 	setChannel(selector);
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adcValue, CHANNEL_NUM+1);
-	while(selector <= 15) { __NOP(); };
+	while(selector <= 15) { __NOP(); }; //TODO add timeout
 }
 
 const Fields* FieldDriver::getFilds() const

@@ -87,7 +87,7 @@ bool FlashDriver::init() {
     // For N25Q032 expected ID: 0x20 0xBA 0x18 (may differ)
     // If ID is invalid, you can return false.
     // In this example, we consider any value other than 0xFFFFFF as success.
-    return (id != 0xFFFFFFFF);
+    return (id != 0xFFFFFF);
 }
 
 uint32_t FlashDriver::readID() {

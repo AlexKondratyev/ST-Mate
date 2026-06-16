@@ -52,7 +52,7 @@ DriverLED::DriverLED(FlashDriverInterface* flash)
 	TIM4->CCR1 = 0; //set to zero so that the pin stay low until transmission
 	TIM4->ARR = tresetARR; //set to timing for reset LEDs
 	TIM4->CCER |= TIM_CCER_CC1E; //enable output to pin.
-	TIM4->CR1 |= TIM_CR1_CEN; //Disable channel 1. This bit is used to start and stop transmission.
+	TIM4->CR1 &= ~TIM_CR1_CEN; //Disable channel 1. This bit is used to start and stop transmission.
 	TIM4->CR1 |= TIM_CR1_ARPE; //buffer ARR
 	TIM4->CCMR1 |= TIM_CCMR1_OC1PE; //buffer CCR1
 	TIM4->DIER &= ~TIM_DIER_UIE; // ensure we are not enabling interrupt flag to be generated this bit is used to start/stop transmission
@@ -108,7 +108,7 @@ void DriverLED::animationPowerOn()
 
 DriverLED::~DriverLED()
 {
-	delete colorsArray;
+	delete[] colorsArray;
 }
 
 uint8_t DriverLED::getBrightness() const
