@@ -227,7 +227,7 @@ bool FlashDriver::write(uint32_t addr, const uint8_t* data, uint32_t len) {
     uint32_t lastSector  = (addr + len - 1) / SECTOR_SIZE;
 
     // Buffer for one sector (4 KB)
-    uint8_t sectorBuffer[SECTOR_SIZE];
+    static uint8_t sectorBuffer[SECTOR_SIZE];
 
     for (uint32_t sectorIdx = firstSector; sectorIdx <= lastSector; ++sectorIdx) {
         uint32_t sectorStart = sectorIdx * SECTOR_SIZE;

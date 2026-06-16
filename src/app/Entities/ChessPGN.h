@@ -2,7 +2,8 @@
 #define CHESSPGN_H
 
 #include <string>
-#include <vector>
+#include <list>
+#include <iterator>
 
 enum class GameResult {
     WHITE_WINS,
@@ -24,7 +25,7 @@ private:
     std::string fen;       // FEN
 
     // Game moves
-    std::vector<std::string> moves;
+    std::list<std::string> moves;
     // Comments
 //    std::vector<std::string> comments;
     // Game result
@@ -69,7 +70,7 @@ public:
     // Getters
     std::string getResult() const { return result; }
     GameResult getResultEnum() const { return gameResult; }
-    std::vector<std::string> getMoves() const { return moves; }
+    std::list<std::string> getMoves() const { return moves; }
 };
 
 

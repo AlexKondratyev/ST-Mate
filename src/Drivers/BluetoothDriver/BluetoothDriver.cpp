@@ -27,6 +27,9 @@ BluetoothDriver::BluetoothDriver()
 	: _huart(&huart1)
 	, rxInProgress(false)
 {
+    if (btDriver != nullptr) {
+        Error_Handler(); // Only one instance allowed
+    }
 	btDriver = this;
     init();
 }

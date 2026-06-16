@@ -62,7 +62,9 @@ std::string ChessPGN::formatMoves() {
             sprintf(str, "%d. ", moveNumber++);
             ss.append(str);
         }
-        ss.append(moves[i]);
+        auto move_it = moves.begin();
+        std::advance(move_it, i);
+        ss.append(*move_it);
         // Add comments if any
 //        while (commentIndex < comments.size()) {
 //            ss.append(" ").append(comments[commentIndex]);

@@ -347,7 +347,7 @@ int main(void)
   }
 
   state.cpuVoltage = fieldDriver.getVRef();
-  state.seed = hwCfg.prngEnabled ? fieldDriver.getSeed() : 13;
+  state.seed = hwCfg.prngEnabled ? fieldDriver.getSeed() : 25;
   interactor.setSeed(state.seed);
 
   // Subscribe to Bluetooth messages

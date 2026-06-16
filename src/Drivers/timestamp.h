@@ -15,7 +15,7 @@
 #endif
 
 // ChessEngine.cpp
-uint64_t getCurrentTimeMs() {
+inline uint64_t getCurrentTimeMs() {
 #ifdef STM32F103xB
     return HAL_GetTick();  // milliseconds from start
 #else
